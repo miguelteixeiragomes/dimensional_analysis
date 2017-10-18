@@ -6,7 +6,7 @@
 #include <boost\multiprecision\cpp_dec_float.hpp>
 #include <boost\static_assert.hpp>
 #include <boost\variant.hpp>
-#include "DimensionalAnalysis.h"
+#include "dimensions.h"
 
 //#define SKIP_ALL
 #define INT8 int8

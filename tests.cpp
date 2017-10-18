@@ -1,5 +1,5 @@
 #include <iostream>
-#include "PrimitiveTypes.h"
+#include "dimensional_analysis.h"
 
 
 void test1() {
@@ -20,7 +20,7 @@ void test1() {
 	int32<Time> a = 5;
 	int32<Adimensional> b = 2;
 
-	std::cout << (~b) << '\n';
+	//std::cout << (~b) << '\n';
 	/*std::cout << a + b << "\n";
 	std::cout << a - b << "\n";
 	std::cout << a * b << "\n";
