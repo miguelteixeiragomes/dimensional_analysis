@@ -153,6 +153,13 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   <ItemGroup>
     <CudaCompile Include="kernel.cu" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DimensionalAnalysis.h" />
+    <ClInclude Include="PrimitiveTypes.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="tests.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 8.0.targets" />
