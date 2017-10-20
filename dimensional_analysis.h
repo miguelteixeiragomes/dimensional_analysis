@@ -2,7 +2,8 @@
 
 #include "dimensions.h"
 
-//#define SKIP_ALL
+//#define SKIP_DIMENSIONAL_ANALYSIS
+
 #define INT8  int8
 #define INT16 int16
 #define INT32 int32
@@ -18,17 +19,17 @@
 #define FLOAT64_T double
 
 
-#ifndef SKIP_ALL
+#ifndef SKIP_DIMENSIONAL_ANALYSIS
 	
-	#define IS_NUMERIC_TYPE(TYPE) (std::is_same<TYPE, std::int8_t>::value    | \
-								   std::is_same<TYPE, std::int16_t>::value   | \
-								   std::is_same<TYPE, std::int32_t>::value   | \
-								   std::is_same<TYPE, std::int64_t>::value   | \
-								   std::is_same<TYPE, std::uint8_t>::value   | \
-								   std::is_same<TYPE, std::uint16_t>::value  | \
-								   std::is_same<TYPE, std::uint32_t>::value  | \
-								   std::is_same<TYPE, std::uint64_t>::value  | \
-								   std::is_same<TYPE, FLOAT32_T>::value | \
+	#define IS_NUMERIC_TYPE(TYPE) (std::is_same<TYPE, std::int8_t>::value   | \
+								   std::is_same<TYPE, std::int16_t>::value  | \
+								   std::is_same<TYPE, std::int32_t>::value  | \
+								   std::is_same<TYPE, std::int64_t>::value  | \
+								   std::is_same<TYPE, std::uint8_t>::value  | \
+								   std::is_same<TYPE, std::uint16_t>::value | \
+								   std::is_same<TYPE, std::uint32_t>::value | \
+								   std::is_same<TYPE, std::uint64_t>::value | \
+								   std::is_same<TYPE, FLOAT32_T>::value     | \
 								   std::is_same<TYPE, FLOAT64_T>::value)
 
 	#define IS_INTEGER_TYPE(TYPE) (std::is_same<TYPE, std::int8_t>::value   | \
@@ -46,7 +47,7 @@
 	};
 
 	template<typename NumT, typename Dims = Adimensional> class PrimitiveType {
-		static_assert(IS_NUMERIC_TYPE(NumT), "Only primitive numeric types are allowed.");
+		static_assert(IS_NUMERIC_TYPE(NumT), "Only C++ primitive numeric types are allowed as first template specialization of class 'PrimitiveType'.");
 
 		public:
 			NumT value;
@@ -64,7 +65,7 @@
 			}
 
 			inline friend std::ostream &operator<<(std::ostream &os, PrimitiveType<NumT, Dims> &rhs) {
-					return os << rhs.value;
+				return os << rhs.value;
 			}
 
 			#define UNARY_PLUS_MINUS(OPERATOR)\
@@ -210,6 +211,20 @@
 	template<typename Dims = Adimensional> using FLOAT32 = PrimitiveType<FLOAT32_T, Dims>;
 	template<typename Dims = Adimensional> using FLOAT64 = PrimitiveType<FLOAT64_T, Dims>;
 
+
+	#undef IS_NUMERIC_TYPE
+	#undef IS_INTEGER_TYPE
+	#undef UNARY_PLUS_MINUS
+	#undef UNARY_INCREMENT_DECREMENT
+	#undef SAME_UNITS_COMPOUND_ASSIGNMENT
+	#undef MUL_DIV_COMPOUND_ASSIGNMENT
+	#undef SAME_UNITS_OPERATOR
+	#undef COMPARATOR
+	#undef MUL_OR_DIV
+	#undef BITWISE_BINARY_OPERATOR
+
+	#define remove_dims(X) PrimitiveTypes<decltype(X.value), Adimensional>(X.value)
+
 #else
 
 	template<typename Dims = Adimensional> using INT8  = std::int8_t;
@@ -225,4 +240,20 @@
 	template<typename Dims = Adimensional> using FLOAT32 = FLOAT32_T;
 	template<typename Dims = Adimensional> using FLOAT64 = FLOAT64_T;
 
+	#define remove_dims(X) X
+
 #endif
+
+#undef SKIP_DIMENSIONAL_ANALYSIS
+#undef INT8
+#undef INT16
+#undef INT32
+#undef INT64
+#undef UINT8
+#undef UINT16
+#undef UINT32
+#undef UINT64
+#undef FLOAT32
+#undef FLOAT64
+#undef FLOAT32_T
+#undef FLOAT64_T

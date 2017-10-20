@@ -17,7 +17,7 @@ void test1() {
 	bool b8;
 
 	//auto c = ~i8;
-	int t = int32<Time>(1);
+	int t = int32<>(1);
 
 	int32<Time> a = 5;
 	int32<Time> b = 2;
