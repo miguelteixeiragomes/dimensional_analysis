@@ -59,6 +59,10 @@
 				this->value = x.value;
 			}
 
+			template<typename Constraint = typename std::enable_if<std::is_same<Dims, Adimensional>::value, void>::type> inline operator NumT() {
+				return this->value;
+			}
+
 			inline friend std::ostream &operator<<(std::ostream &os, PrimitiveType<NumT, Dims> &rhs) {
 					return os << rhs.value;
 			}

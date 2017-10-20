@@ -1,6 +1,7 @@
 #include <iostream>
 #include "dimensional_analysis.h"
 
+class A {};
 
 void test1() {
 	std::int8_t i8;
@@ -16,6 +17,7 @@ void test1() {
 	bool b8;
 
 	//auto c = ~i8;
+	int t = int32<Time>(1);
 
 	int32<Time> a = 5;
 	int32<Time> b = 2;
