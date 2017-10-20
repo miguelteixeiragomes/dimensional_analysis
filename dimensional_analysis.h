@@ -244,7 +244,9 @@
 
 #endif
 
-#undef SKIP_DIMENSIONAL_ANALYSIS
+#ifdef SKIP_DIMENSIONAL_ANALYSIS
+	#undef SKIP_DIMENSIONAL_ANALYSIS
+#endif
 #undef INT8
 #undef INT16
 #undef INT32
