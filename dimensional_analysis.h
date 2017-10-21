@@ -21,17 +21,6 @@
 
 #ifndef SKIP_DIMENSIONAL_ANALYSIS
 	
-	#define IS_NUMERIC_TYPE(TYPE) (std::is_same<TYPE, std::int8_t>::value   | \
-								   std::is_same<TYPE, std::int16_t>::value  | \
-								   std::is_same<TYPE, std::int32_t>::value  | \
-								   std::is_same<TYPE, std::int64_t>::value  | \
-								   std::is_same<TYPE, std::uint8_t>::value  | \
-								   std::is_same<TYPE, std::uint16_t>::value | \
-								   std::is_same<TYPE, std::uint32_t>::value | \
-								   std::is_same<TYPE, std::uint64_t>::value | \
-								   std::is_same<TYPE, FLOAT32_T>::value     | \
-								   std::is_same<TYPE, FLOAT64_T>::value)
-
 	#define IS_INTEGER_TYPE(TYPE) (std::is_same<TYPE, std::int8_t>::value   | \
 								   std::is_same<TYPE, std::int16_t>::value  | \
 								   std::is_same<TYPE, std::int32_t>::value  | \
@@ -40,6 +29,12 @@
 								   std::is_same<TYPE, std::uint16_t>::value | \
 								   std::is_same<TYPE, std::uint32_t>::value | \
 								   std::is_same<TYPE, std::uint64_t>::value)
+
+	#define IS_NUMERIC_TYPE(TYPE) (IS_INTEGER_TYPE(TYPE)                | \
+								   std::is_same<TYPE, FLOAT32_T>::value | \
+								   std::is_same<TYPE, FLOAT64_T>::value)
+
+	
 
 
 	template<typename NumT> struct NumericValue {
@@ -69,18 +64,18 @@
 			}
 
 			#define UNARY_PLUS_MINUS(OPERATOR)\
-				inline PrimitiveType<decltype( ## OPERATOR ## NumericValue<NumT>::value), Dims> operator OPERATOR () {\
-					return PrimitiveType<decltype( ## OPERATOR ## NumericValue<NumT>::value), Dims>( ## OPERATOR ## value);\
+				inline PrimitiveType</*decltype( OPERATOR NumericValue<*/NumT/*>::value)*/, Dims> operator OPERATOR () {\
+					return PrimitiveType</*decltype( OPERATOR NumericValue<*/NumT/*>::value)*/, Dims>( OPERATOR this->value);\
 				}
 
 			#define	UNARY_INCREMENT_DECREMENT(OPERATOR)\
-				inline PrimitiveType<NumT, Dims>& operator ## OPERATOR ## () {\
-					value ## OPERATOR ##;\
+				inline PrimitiveType<NumT, Dims>& operator OPERATOR () {\
+					(this->value) OPERATOR;\
 					return *this;\
 				}\
-				inline PrimitiveType<NumT, Dims>& operator ## OPERATOR ## (int) {\
+				inline PrimitiveType<NumT, Dims> operator OPERATOR (int) {\
 					PrimitiveType<NumT, Dims> temp = *this;\
-					value ## OPERATOR ##;\
+					(this->value) OPERATOR;\
 					return temp;\
 				}
 
@@ -114,9 +109,13 @@
 			UNARY_INCREMENT_DECREMENT(--)
 
 			SAME_UNITS_COMPOUND_ASSIGNMENT(+=, Unmatched_dimensions_in_compound_addition_between)
-			SAME_UNITS_COMPOUND_ASSIGNMENT(-=, Unmatched_dimensions_in_compound_addition_between)
+			SAME_UNITS_COMPOUND_ASSIGNMENT(-=, Unmatched_dimensions_in_compound_subtraction_between)
+
+			//MUL_DIV_COMPOUND_ASSIGNMENT(*=)
 	};
 
+
+	// Operator overloads between the library's primitive types
 	#define SAME_UNITS_OPERATOR(OPERATOR, ERROR_MESSAGE)\
 		template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
 			inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Dims>\
@@ -178,6 +177,100 @@
 	BITWISE_BINARY_OPERATOR(^ , Bitwise_exclusive_or_is_only_available_between_adimensional_numbers_and_not_for)
 	BITWISE_BINARY_OPERATOR(<<, Bitwise_left_shift_is_only_available_between_adimensional_numbers_and_not_for)
 	BITWISE_BINARY_OPERATOR(>>, Bitwise_right_shift_is_only_available_between_adimensional_numbers_and_not_for)
+
+
+	// Operator overloads between the library's adimensional primitive types and C++ primitive types (including 'bool')
+	#define SAME_UNITS_OPERATOR_WITH_C_PRIM(OPERATOR, ERROR_MESSAGE)\
+		template<typename NumT_lhs, typename NumT_rhs>\
+			inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
+				operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
+					return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs OPERATOR rhs.value);\
+				}\
+		\
+		template<typename NumT_lhs, typename NumT_rhs>\
+			inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
+				operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional> lhs, NumT_rhs rhs) {\
+					return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs.value OPERATOR rhs);\
+				}\
+		\
+		template<typename NumT_lhs, typename NumT_rhs, typename Dims> struct ERROR_MESSAGE;\
+		\
+		template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
+			ERROR_MESSAGE<NumT_lhs, NumT_rhs, Dims> operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Dims> rhs);\
+		\
+		template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
+			ERROR_MESSAGE<NumT_lhs, NumT_rhs, Dims> operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, NumT_rhs rhs);\
+
+	#define MUL_OR_DIV_C_PRIM(OPERATOR, CT_FUNC)\
+		template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
+			inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC ## <Adimensional, Dims>::result>\
+				operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Dims> rhs) {\
+					return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC ## <Adimensional, Dims>::result>(lhs OPERATOR rhs.value);\
+				}\
+		template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
+			inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC ## <Dims, Adimensional>::result>\
+				operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, NumT_rhs rhs) {\
+					return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC ## <Dims, Adimensional>::result>(lhs.value OPERATOR rhs);\
+				}
+
+	#define COMPARATOR_C_PRIM(OPERATOR, ERROR_MESSAGE)\
+		template<typename NumT_lhs, typename NumT_rhs>\
+			inline bool operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
+					return lhs OPERATOR rhs.value;\
+				}\
+		\
+		template<typename NumT_lhs, typename NumT_rhs>\
+			inline bool operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional> lhs, NumT_rhs rhs) {\
+					return lhs.value OPERATOR rhs;\
+				}\
+		\
+		template<typename NumT_lhs, typename NumT_rhs, typename Dims> struct ERROR_MESSAGE;\
+		\
+		template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
+			ERROR_MESSAGE<NumT_lhs, NumT_rhs, Dims> operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Dims> rhs);\
+		\
+		template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
+			ERROR_MESSAGE<NumT_lhs, NumT_rhs, Dims> operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, NumT_rhs rhs);
+
+	#define BITWISE_BINARY_OPERATOR_C_PRIM(OPERATOR, ERROR_MESSAGE)\
+		template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<IS_INTEGER(NumT_lhs), void>::type>\
+			inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
+				operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
+					return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs OPERATOR rhs.value);\
+				}\
+		\
+		template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<IS_INTEGER(NumT_rhs), void>::type>\
+			inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
+				operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional> lhs, NumT_rhs rhs) {\
+					return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs.value OPERATOR rhs);\
+				}\
+		\
+		template<typename NumT_lhs, typename NumT_rhs, typename Dims> struct ERROR_MESSAGE;\
+		\
+		template<typename NumT_lhs, typename NumT_rhs, typename Dims, typename Constraint = typename std::enable_if<IS_INTEGER(NumT_lhs), void>::type>\
+			ERROR_MESSAGE<NumT_lhs, NumT_rhs, Dims> operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Dims> rhs);\
+		\
+		template<typename NumT_lhs, typename NumT_rhs, typename Dims, typename Constraint = typename std::enable_if<IS_INTEGER(NumT_rhs), void>::type>\
+			ERROR_MESSAGE<NumT_lhs, NumT_rhs, Dims> operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, NumT_rhs rhs);
+
+	SAME_UNITS_OPERATOR_WITH_C_PRIM(+, Addition_is_not_possible_between_Cpp_primitive_types_and_dimensioned_quantities)
+	SAME_UNITS_OPERATOR_WITH_C_PRIM(-, Addition_is_not_possible_between_Cpp_primitive_types_and_dimensioned_quantities)
+
+	MUL_OR_DIV_C_PRIM(*, __ADD_DIMENSIONS__)
+	MUL_OR_DIV_C_PRIM(/, __SUB_DIMENSIONS__)
+
+	COMPARATOR_C_PRIM(==, Comparison_operator_equal_is_not_available_between_Cpp_primitives_and_dimensioned_quantities)
+	COMPARATOR_C_PRIM(!=, Comparison_operator_unequal_is_not_available_between_Cpp_primitives_and_dimensioned_quantities)
+	COMPARATOR_C_PRIM(> , Comparison_operator_greater_than_is_not_available_between_Cpp_primitives_and_dimensioned_quantities)
+	COMPARATOR_C_PRIM(< , Comparison_operator_less_than_is_not_available_between_Cpp_primitives_and_dimensioned_quantities)
+	COMPARATOR_C_PRIM(>=, Comparison_operator_greater_than_or_equal_to_is_not_available_between_Cpp_primitives_and_dimensioned_quantities)
+	COMPARATOR_C_PRIM(<=, Comparison_operator_less_than_or_equal_to_is_not_available_between_Cpp_primitives_and_dimensioned_quantities)
+
+	BITWISE_BINARY_OPERATOR_C_PRIM(| , Bitwise_or_is_not_available_between_Cpp_primitive_types_and_dimensioned_quantities)
+	BITWISE_BINARY_OPERATOR_C_PRIM(& , Bitwise_and_is_not_available_between_Cpp_primitive_types_and_dimensioned_quantities)
+	BITWISE_BINARY_OPERATOR_C_PRIM(^ , Bitwise_exclusive_or_is_not_available_between_Cpp_primitive_types_and_dimensioned_quantities)
+	BITWISE_BINARY_OPERATOR_C_PRIM(<<, Bitwise_left_shift_is_not_available_between_Cpp_primitive_types_and_dimensioned_quantities)
+	BITWISE_BINARY_OPERATOR_C_PRIM(>>, Bitwise_right_shift_is_not_available_between_Cpp_primitive_types_and_dimensioned_quantities)
 
 
 	template<typename NumT> struct Bitwise_negation_is_only_available_for_integers_and_not;
