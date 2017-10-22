@@ -20,23 +20,12 @@
 
 
 #ifndef SKIP_DIMENSIONAL_ANALYSIS
-	
-	#define IS_INTEGER_TYPE(TYPE) (std::is_same<TYPE, std::int8_t>::value   | \
-								   std::is_same<TYPE, std::int16_t>::value  | \
-								   std::is_same<TYPE, std::int32_t>::value  | \
-								   std::is_same<TYPE, std::int64_t>::value  | \
-								   std::is_same<TYPE, std::uint8_t>::value  | \
-								   std::is_same<TYPE, std::uint16_t>::value | \
-								   std::is_same<TYPE, std::uint32_t>::value | \
-								   std::is_same<TYPE, std::uint64_t>::value)
 
-	#define IS_NUMERIC_TYPE(TYPE) (IS_INTEGER_TYPE(TYPE)                | \
-								   std::is_same<TYPE, FLOAT32_T>::value | \
-								   std::is_same<TYPE, FLOAT64_T>::value)
+	#define IS_INTEGER_TYPE(TYPE) (std::is_integral<TYPE>::value & !std::is_same<TYPE, bool>::value)
+	#define IS_INTEGER_TYPE_OR_BOOL(TYPE) std::is_integral<TYPE>::value
+	#define IS_NUMERIC_TYPE(TYPE) std::is_arithmetic<TYPE>::value
 
 	
-
-
 	template<typename NumT> struct NumericValue {
 		static const NumT value;
 	};
@@ -64,8 +53,8 @@
 			}
 
 			#define UNARY_PLUS_MINUS(OPERATOR)\
-				inline PrimitiveType</*decltype( OPERATOR NumericValue<*/NumT/*>::value)*/, Dims> operator OPERATOR () {\
-					return PrimitiveType</*decltype( OPERATOR NumericValue<*/NumT/*>::value)*/, Dims>( OPERATOR this->value);\
+				inline PrimitiveType<decltype( OPERATOR NumericValue<NumT>::value), Dims> operator OPERATOR () {\
+					return PrimitiveType<decltype( OPERATOR NumericValue<NumT>::value), Dims>( OPERATOR this->value);\
 				}
 
 			#define	UNARY_INCREMENT_DECREMENT(OPERATOR)\
@@ -85,10 +74,10 @@
 					return *this;\
 				}\
 				\
-				template<typename NumT_lhs, typename DimsLhs, typename NumT_rhs, typename DimsRhs> struct ERROR_MESSAGE;\
+				template<typename NumT_rhs, typename DimsRhs> struct ERROR_MESSAGE;\
 				\
 				template<typename NumT_rhs, typename DimsRhs>\
-					ERROR_MESSAGE<NumT, Dims, NumT_rhs, DimsRhs> operator OPERATOR (PrimitiveType<NumT_rhs, DimsRhs> rhs);
+					ERROR_MESSAGE<NumT_rhs, DimsRhs> operator OPERATOR (PrimitiveType<NumT_rhs, DimsRhs> rhs);
 
 			#define MUL_DIV_COMPOUND_ASSIGNMENT(OPERATOR, ERROR_MESSAGE)\
 				inline PrimitiveType<NumT, Dims> operator OPERATOR (PrimitiveType<NumT, Adimensional> rhs){\
@@ -96,10 +85,22 @@
 					return *this;\
 				}\
 				\
-				template<typename NumT_lhs, typename DimsLhs, typename NumT_rhs, typename DimsRhs> struct ERROR_MESSAGE;\
+				template<typename NumT_rhs, typename DimsRhs> struct ERROR_MESSAGE;\
 				\
-				template<typename NumT_lhs, typename NumT_rhs, typename DimsRhs>\
-					ERROR_MESSAGE<NumT, Dims, NumT_rhs, DimsRhs> operator OPERATOR (PrimitiveType<NumT_rhs, DimsRhs> rhs);
+				template<typename NumT_rhs, typename DimsRhs>\
+					ERROR_MESSAGE<NumT_rhs, DimsRhs> operator OPERATOR (PrimitiveType<NumT_rhs, DimsRhs> rhs);
+
+			#define BITWISE_COMPOUND_ASSIGNMENT(OPERATOR, ERROR_MESSAGE)\
+				template<typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_same<Dims, Adimensional>::value, void>::type>\
+					inline PrimitiveType<NumT, Adimensional> operator OPERATOR (PrimitiveType<NumT_rhs, Adimensional> rhs) {\
+						this->value OPERATOR rhs.value;\
+						return *this;\
+					}\
+				\
+				template<typename NumT_rhs, typename DimsRhs> struct ERROR_MESSAGE;\
+				\
+				template<typename NumT_rhs, typename DimsRhs>\
+					ERROR_MESSAGE<NumT_rhs, DimsRhs> operator OPERATOR (PrimitiveType<NumT_rhs, DimsRhs> rhs);
 
 
 			UNARY_PLUS_MINUS(+)
@@ -111,7 +112,14 @@
 			SAME_UNITS_COMPOUND_ASSIGNMENT(+=, Unmatched_dimensions_in_compound_addition_between)
 			SAME_UNITS_COMPOUND_ASSIGNMENT(-=, Unmatched_dimensions_in_compound_subtraction_between)
 
-			//MUL_DIV_COMPOUND_ASSIGNMENT(*=)
+			MUL_DIV_COMPOUND_ASSIGNMENT(*=, Compound_assignment_multiplication_is_only_possible_with_an_adimensional_right_hand_side)
+			MUL_DIV_COMPOUND_ASSIGNMENT(/=, Compound_assignment_division_is_only_possible_with_an_adimensional_right_hand_side)
+
+			BITWISE_COMPOUND_ASSIGNMENT(|= , Compound_assignment_bitwise_or_is_only_possible_between_adimensional_quantities)
+			BITWISE_COMPOUND_ASSIGNMENT(^= , Compound_assignment_bitwise_exclusive_or_is_only_possible_between_adimensional_quantities)
+			BITWISE_COMPOUND_ASSIGNMENT(&= , Compound_assignment_bitwise_and_is_only_possible_between_adimensional_quantities)
+			BITWISE_COMPOUND_ASSIGNMENT(<<=, Compound_assignment_bitwise_left_shift_is_only_possible_between_adimensional_quantities)
+			BITWISE_COMPOUND_ASSIGNMENT(>>=, Compound_assignment_bitwise_right_shift_is_only_possible_between_adimensional_quantities)
 	};
 
 
@@ -141,9 +149,9 @@
 
 	#define MUL_OR_DIV(OPERATOR, CT_FUNC)\
 		template<typename NumT_lhs, typename NumT_rhs, typename DimsLhs, typename DimsRhs>\
-			inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC ## <DimsLhs, DimsRhs>::result>\
+			inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC<DimsLhs, DimsRhs>::result>\
 				operator OPERATOR (PrimitiveType<NumT_lhs, DimsLhs> lhs, PrimitiveType<NumT_rhs, DimsRhs> rhs) {\
-					return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC ## <DimsLhs, DimsRhs>::result>(lhs.value OPERATOR rhs.value);\
+					return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC<DimsLhs, DimsRhs>::result>(lhs.value OPERATOR rhs.value);\
 				}
 
 	#define BITWISE_BINARY_OPERATOR(OPERATOR, ERROR_MESSAGE)\
@@ -203,14 +211,14 @@
 
 	#define MUL_OR_DIV_C_PRIM(OPERATOR, CT_FUNC)\
 		template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
-			inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC ## <Adimensional, Dims>::result>\
+			inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC<Adimensional, Dims>::result>\
 				operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Dims> rhs) {\
-					return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC ## <Adimensional, Dims>::result>(lhs OPERATOR rhs.value);\
+					return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC<Adimensional, Dims>::result>(lhs OPERATOR rhs.value);\
 				}\
 		template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
-			inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC ## <Dims, Adimensional>::result>\
+			inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC<Dims, Adimensional>::result>\
 				operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, NumT_rhs rhs) {\
-					return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC ## <Dims, Adimensional>::result>(lhs.value OPERATOR rhs);\
+					return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC<Dims, Adimensional>::result>(lhs.value OPERATOR rhs);\
 				}
 
 	#define COMPARATOR_C_PRIM(OPERATOR, ERROR_MESSAGE)\
@@ -305,7 +313,7 @@
 	template<typename Dims = Adimensional> using FLOAT64 = PrimitiveType<FLOAT64_T, Dims>;
 
 
-	#undef IS_NUMERIC_TYPE
+	/*#undef IS_NUMERIC_TYPE
 	#undef IS_INTEGER_TYPE
 	#undef UNARY_PLUS_MINUS
 	#undef UNARY_INCREMENT_DECREMENT
@@ -314,7 +322,7 @@
 	#undef SAME_UNITS_OPERATOR
 	#undef COMPARATOR
 	#undef MUL_OR_DIV
-	#undef BITWISE_BINARY_OPERATOR
+	#undef BITWISE_BINARY_OPERATOR*/
 
 	#define remove_dims(X) PrimitiveTypes<decltype(X.value), Adimensional>(X.value)
 
@@ -337,7 +345,7 @@
 
 #endif
 
-#ifdef SKIP_DIMENSIONAL_ANALYSIS
+/*#ifdef SKIP_DIMENSIONAL_ANALYSIS
 	#undef SKIP_DIMENSIONAL_ANALYSIS
 #endif
 #undef INT8
@@ -351,4 +359,4 @@
 #undef FLOAT32
 #undef FLOAT64
 #undef FLOAT32_T
-#undef FLOAT64_T
+#undef FLOAT64_T*/
