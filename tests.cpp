@@ -1,13 +1,11 @@
 #include <iostream>
 #include "dimensional_analysis.h"
-#include <vector>
 
 class A {};
 
 void test1() {
 	std::cout << std::boolalpha;
 
-	std::vector<int> aux = { 1, 2 };
 	std::int8_t i8 = 1;
 	std::int16_t i16 = 1;
 	std::int32_t i32 = 1;
@@ -48,7 +46,6 @@ void test1() {
 
 	int t = int32<>(1);
 
-	std::cout << IS_NUMERIC_TYPE(std::int32_t) << '\n';
 	int32<Time> a = 5;
 	int32<Time> b = a;
 	int32<> e = 2;
