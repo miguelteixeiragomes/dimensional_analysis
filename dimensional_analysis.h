@@ -29,25 +29,25 @@
 	template<typename NumT> struct NumericValue {
 		static const NumT value;
 	};
-
+	
 	template<typename NumT, typename Dims = Adimensional> class PrimitiveType {
 		static_assert(IS_NUMERIC_TYPE(NumT), "Only C++ primitive numeric types are allowed as first template specialization of class 'PrimitiveType'.");
 
 		public:
 			NumT value;
-
+			
 			inline PrimitiveType() {}
 
 			inline PrimitiveType(NumT value) : value(value) {}
-
+			
 			template<typename NumT2> inline PrimitiveType(PrimitiveType<NumT2, Dims> x) {
 				this->value = x.value;
 			}
-
+			};/*
 			template<typename Constraint = typename std::enable_if<std::is_same<Dims, Adimensional>::value, void>::type> inline operator NumT() {
 				return this->value;
 			}
-
+			
 			inline friend std::ostream &operator<<(std::ostream &os, PrimitiveType<NumT, Dims> &rhs) {
 				return os << rhs.value;
 			}
@@ -102,7 +102,7 @@
 				template<typename NumT_rhs, typename DimsRhs>\
 					ERROR_MESSAGE<NumT_rhs, DimsRhs> operator OPERATOR (PrimitiveType<NumT_rhs, DimsRhs> rhs);
 
-
+			
 			UNARY_PLUS_MINUS(+)
 			UNARY_PLUS_MINUS(-)
 
@@ -295,7 +295,7 @@
 		inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value % NumericValue<NumT_rhs>::value), DimsLhs>
 			operator%(PrimitiveType<NumT_lhs, DimsLhs> lhs, PrimitiveType<NumT_rhs, DimsRhs> rhs) {
 				return PrimitiveType<decltype(NumericValue<NumT_lhs>::value % NumericValue<NumT_rhs>::value), DimsLhs>(lhs.value % rhs.value);
-	}
+	}*/
 
 
 	// typedefing the primitive types
@@ -322,10 +322,10 @@
 	#undef SAME_UNITS_OPERATOR
 	#undef COMPARATOR
 	#undef MUL_OR_DIV
-	#undef BITWISE_BINARY_OPERATOR*/
+	#undef BITWISE_BINARY_OPERATOR
 
 	#define remove_dims(X) PrimitiveTypes<decltype(X.value), Adimensional>(X.value)
-
+	*/
 #else
 
 	template<typename Dims = Adimensional> using INT8  = std::int8_t;

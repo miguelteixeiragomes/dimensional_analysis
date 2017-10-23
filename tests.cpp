@@ -17,6 +17,7 @@ void test1() {
 	float f32 = 1;
 	double f64 = 1;
 	bool b8 = 1;
+	std::cout << b8 << '\n';
 	/*#define OP -
 	std::cout << typeid(decltype(OP NumericValue<std::int8_t>::value)).name() << '\n';
 	std::cout << typeid(decltype(OP NumericValue<std::int16_t>::value)).name() << '\n';
@@ -44,14 +45,14 @@ void test1() {
 	std::cout << IS_NUMERIC_TYPE(decltype(OP NumericValue<float>::value)) << '\n';
 	std::cout << IS_NUMERIC_TYPE(decltype(OP NumericValue<double>::value)) << "\n\n";*/
 
-	int t = int32<>(1);
+	//int t = int32<>(1);
 
 	int32<Time> a = 5;
 	int32<Time> b = a;
 	int32<> e = 2;
 	int64<> c = 7;
 	int64<> d = c;
-
+	/*
 	auto yo = +b8;
 	std::cout << "u+:  " << +a << "\n";
 	std::cout << "u-:  " << -a << "\n";
@@ -82,7 +83,7 @@ void test1() {
 	std::cout << "&=:  " << (c &= d) << "\n";
 	std::cout << "^=:  " << (c ^= d) << "\n";
 	std::cout << "<<=: " << (c <<= d) << "\n";
-	std::cout << ">>=: " << (c >>= d) << "\n";
+	std::cout << ">>=: " << (c >>= d) << "\n";*/
 }
 
 
