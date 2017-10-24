@@ -23,40 +23,48 @@
 
 	#define IS_INTEGER_TYPE(TYPE) (std::is_integral<TYPE>::value & !std::is_same<TYPE, bool>::value)
 	#define IS_INTEGER_TYPE_OR_BOOL(TYPE) std::is_integral<TYPE>::value
-	#define IS_NUMERIC_TYPE(TYPE) std::is_arithmetic<TYPE>::value
+	#define IS_NUMERIC_TYPE(TYPE) (std::is_arithmetic<TYPE>::value & !std::is_same<TYPE, bool>::value)
 
 	
 	template<typename NumT> struct NumericValue {
 		static const NumT value;
 	};
-	
-	template<typename NumT, typename Dims = Adimensional> class PrimitiveType {
-		static_assert(IS_NUMERIC_TYPE(NumT), "Only C++ primitive numeric types are allowed as first template specialization of class 'PrimitiveType'.");
 
+	template<typename NumT, typename Dims> class PrimitiveTypeBase {};
+
+	template<typename NumT> class PrimitiveTypeBase<NumT, Adimensional> {
 		public:
 			NumT value;
-			
+
+			inline operator NumT() {
+				return this->value;
+			}
+	};
+
+	#define BASE_CLASS PrimitiveTypeBase<NumT, Dims> //std::conditional<std::is_same<Dims, Adimensional>::value, PrimitiveTypeBase<NumT, Dims>, PrimitiveTypeBase<NumT, Dims> >::type
+	template<typename NumT, typename Dims = Adimensional> class PrimitiveType : public BASE_CLASS {
+		static_assert(IS_NUMERIC_TYPE(NumT), "Only C++ primitive numeric types are allowed as first template specialization of class 'PrimitiveType'.");
+		
+		public:
+			NumT value;
+
 			inline PrimitiveType() {}
 
 			inline PrimitiveType(NumT value) : value(value) {}
-			
+
 			template<typename NumT2> inline PrimitiveType(PrimitiveType<NumT2, Dims> x) {
 				this->value = x.value;
 			}
-			};/*
-			template<typename Constraint = typename std::enable_if<std::is_same<Dims, Adimensional>::value, void>::type> inline operator NumT() {
-				return this->value;
-			}
-			
-			inline friend std::ostream &operator<<(std::ostream &os, PrimitiveType<NumT, Dims> &rhs) {
-				return os << rhs.value;
-			}
 
+			/*inline friend std::ostream &operator<<(std::ostream &os, PrimitiveType<NumT, Dims> &rhs) {
+				return os << rhs.value;
+			}*/
+			
 			#define UNARY_PLUS_MINUS(OPERATOR)\
 				inline PrimitiveType<decltype( OPERATOR NumericValue<NumT>::value), Dims> operator OPERATOR () {\
 					return PrimitiveType<decltype( OPERATOR NumericValue<NumT>::value), Dims>( OPERATOR this->value);\
 				}
-
+			
 			#define	UNARY_INCREMENT_DECREMENT(OPERATOR)\
 				inline PrimitiveType<NumT, Dims>& operator OPERATOR () {\
 					(this->value) OPERATOR;\
@@ -68,7 +76,7 @@
 					return temp;\
 				}
 
-			#define SAME_UNITS_COMPOUND_ASSIGNMENT(OPERATOR, ERROR_MESSAGE)\
+			/*#define SAME_UNITS_COMPOUND_ASSIGNMENT(OPERATOR, ERROR_MESSAGE)\
 				template<typename NumT_rhs> inline PrimitiveType<NumT, Dims> operator OPERATOR (PrimitiveType<NumT_rhs, Dims> rhs){\
 					this->value OPERATOR rhs.value;\
 					return *this;\
@@ -102,14 +110,14 @@
 				template<typename NumT_rhs, typename DimsRhs>\
 					ERROR_MESSAGE<NumT_rhs, DimsRhs> operator OPERATOR (PrimitiveType<NumT_rhs, DimsRhs> rhs);
 
-			
+			*/
 			UNARY_PLUS_MINUS(+)
 			UNARY_PLUS_MINUS(-)
-
+			
 			UNARY_INCREMENT_DECREMENT(++)
 			UNARY_INCREMENT_DECREMENT(--)
 
-			SAME_UNITS_COMPOUND_ASSIGNMENT(+=, Unmatched_dimensions_in_compound_addition_between)
+			/*SAME_UNITS_COMPOUND_ASSIGNMENT(+=, Unmatched_dimensions_in_compound_addition_between)
 			SAME_UNITS_COMPOUND_ASSIGNMENT(-=, Unmatched_dimensions_in_compound_subtraction_between)
 
 			MUL_DIV_COMPOUND_ASSIGNMENT(*=, Compound_assignment_multiplication_is_only_possible_with_an_adimensional_right_hand_side)
@@ -119,10 +127,14 @@
 			BITWISE_COMPOUND_ASSIGNMENT(^= , Compound_assignment_bitwise_exclusive_or_is_only_possible_between_adimensional_quantities)
 			BITWISE_COMPOUND_ASSIGNMENT(&= , Compound_assignment_bitwise_and_is_only_possible_between_adimensional_quantities)
 			BITWISE_COMPOUND_ASSIGNMENT(<<=, Compound_assignment_bitwise_left_shift_is_only_possible_between_adimensional_quantities)
-			BITWISE_COMPOUND_ASSIGNMENT(>>=, Compound_assignment_bitwise_right_shift_is_only_possible_between_adimensional_quantities)
+			BITWISE_COMPOUND_ASSIGNMENT(>>=, Compound_assignment_bitwise_right_shift_is_only_possible_between_adimensional_quantities)*/
 	};
 
+	template<typename NumT, typename Dims> inline std::ostream &operator<<(std::ostream &os, PrimitiveType<NumT, Dims> rhs) {
+		return os << rhs.value;
+	}
 
+	
 	// Operator overloads between the library's primitive types
 	#define SAME_UNITS_OPERATOR(OPERATOR, ERROR_MESSAGE)\
 		template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
@@ -165,7 +177,7 @@
 		\
 		template<typename NumT_lhs, typename NumT_rhs, typename DimsLhs, typename DimsRhs>\
 			ERROR_MESSAGE<NumT_lhs, DimsLhs, NumT_rhs, DimsRhs> operator OPERATOR (PrimitiveType<NumT_lhs, DimsLhs> lhs, PrimitiveType<NumT_rhs, DimsRhs> rhs);
-
+	
 
 	SAME_UNITS_OPERATOR(+, Unmatched_dimensions_in_addition_between)
 	SAME_UNITS_OPERATOR(-, Unmatched_dimensions_in_subtraction_between)
@@ -186,7 +198,7 @@
 	BITWISE_BINARY_OPERATOR(<<, Bitwise_left_shift_is_only_available_between_adimensional_numbers_and_not_for)
 	BITWISE_BINARY_OPERATOR(>>, Bitwise_right_shift_is_only_available_between_adimensional_numbers_and_not_for)
 
-
+	/*
 	// Operator overloads between the library's adimensional primitive types and C++ primitive types (including 'bool')
 	#define SAME_UNITS_OPERATOR_WITH_C_PRIM(OPERATOR, ERROR_MESSAGE)\
 		template<typename NumT_lhs, typename NumT_rhs>\
