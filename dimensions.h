@@ -20,6 +20,7 @@ template<typename length,
 		typedef intensity   INTENSITY;
 	};
 
+
 typedef Dimensions< std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Adimensional;
 typedef Dimensions< std::ratio< 1>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Length;
 typedef Dimensions< std::ratio< 0>, std::ratio< 1>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Time;

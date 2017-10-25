@@ -1,4 +1,5 @@
 #include <iostream>
+#include <limits>
 #include "dimensional_analysis.h"
 
 class A { public: int val; };
@@ -8,86 +9,64 @@ class B : public A { public: B() {} };
 void test1() {
 	std::cout << std::boolalpha;
 
-	std::int8_t i8 = 1;
-	std::int16_t i16 = 1;
-	std::int32_t i32 = 1;
-	std::int64_t i64 = 1;
-	std::uint8_t u8 = 1;
-	std::uint16_t u16 = 1;
-	std::uint32_t u32 = 1;
-	std::uint64_t u64 = 1;
-	float f32 = 1;
-	double f64 = 1;
-	bool b8 = 1;
-	/*#define OP -
-	std::cout << typeid(decltype(OP NumericValue<std::int8_t>::value)).name() << '\n';
-	std::cout << typeid(decltype(OP NumericValue<std::int16_t>::value)).name() << '\n';
-	std::cout << typeid(decltype(OP NumericValue<std::int32_t>::value)).name() << '\n';
-	std::cout << typeid(decltype(OP NumericValue<std::int64_t>::value)).name() << "\n\n";
-
-	std::cout << typeid(decltype(OP NumericValue<std::uint8_t>::value)).name() << '\n';
-	std::cout << typeid(decltype(OP NumericValue<std::uint16_t>::value)).name() << '\n';
-	std::cout << typeid(decltype(OP NumericValue<std::uint32_t>::value)).name() << '\n';
-	std::cout << typeid(decltype(OP NumericValue<std::uint64_t>::value)).name() << "\n\n";
-
-	std::cout << typeid(decltype(OP NumericValue<float>::value)).name() << '\n';
-	std::cout << typeid(decltype(OP NumericValue<double>::value)).name() << "\n\n\n";
-
-	std::cout << IS_NUMERIC_TYPE(decltype(OP NumericValue<std::int8_t>::value)) << '\n';
-	std::cout << IS_NUMERIC_TYPE(decltype(OP NumericValue<std::int16_t>::value)) << '\n';
-	std::cout << IS_NUMERIC_TYPE(decltype(OP NumericValue<std::int32_t>::value)) << '\n';
-	std::cout << IS_NUMERIC_TYPE(decltype(OP NumericValue<std::int64_t>::value)) << "\n\n";
-
-	std::cout << IS_NUMERIC_TYPE(decltype(OP NumericValue<std::uint8_t>::value)) << '\n';
-	std::cout << IS_NUMERIC_TYPE(decltype(OP NumericValue<std::uint16_t>::value)) << '\n';
-	std::cout << IS_NUMERIC_TYPE(decltype(OP NumericValue<std::uint32_t>::value)) << '\n';
-	std::cout << IS_NUMERIC_TYPE(decltype(OP NumericValue<std::uint64_t>::value)) << "\n\n";
-
-	std::cout << IS_NUMERIC_TYPE(decltype(OP NumericValue<float>::value)) << '\n';
-	std::cout << IS_NUMERIC_TYPE(decltype(OP NumericValue<double>::value)) << "\n\n";*/
-
-	//int t = int32<>(1);
-
 	int32<Time> a = 5;
 	int32<Time> b = a;
-	int32<> e = 2;
 	int64<> c = 7;
 	int64<> d = c;
+	/*float32<> e = 3.14;
+	float64<> f = 2.7;*/
 
-	auto yo = +b8;
-	std::cout << "a:   " << a << "\n";
-	std::cout << "u+:  " << (+a).value << "\n";
-	std::cout << "u-:  " << -a << "\n";
-	std::cout << "+:   " << a + b << "\n";
-	std::cout << "-:   " << a - b << "\n";
-	std::cout << "*:   " << a * b << "\n";
-	std::cout << "/:   " << a / b << "\n";
-	//std::cout << "%:   " << a % b << "\n";
-	std::cout << "s++: " << a++ << "\n";
-	std::cout << "s--: " << a-- << "\n";
-	std::cout << "p++: " << ++a << "\n";
-	std::cout << "p--: " << --a << "\n";/*
-	std::cout << "+=:  " << (a += b) << "\n";
-	std::cout << "-=:  " << (a -= b) << "\n";
-	std::cout << "*=:  " << (a *= e) << "\n";
-	std::cout << "/=:  " << (a /= e) << "\n";*/
-	std::cout << "==:  " << (a == b) << "\n";
-	std::cout << "!=:  " << (a != b) << "\n";
-	std::cout << ">:   " << (a > b) << "\n";
-	std::cout << "<:   " << (a < b) << "\n";
-	std::cout << ">=:  " << (a >= b) << "\n";
-	std::cout << "<=:  " << (a <= b) << "\n";/*
-	std::cout << "~:   " << (~c) << '\n';*/
-	std::cout << "|:   " << (c | d) << "\n";
-	std::cout << "^:   " << (c ^ d) << "\n";
-	std::cout << "&:   " << (c & d) << "\n";
-	/*std::cout << "<<:  " << (c << d) << "\n";
-	std::cout << ">>:  " << (c >> d) << "\n";
-	std::cout << "|=:  " << (c |= d) << "\n";
-	std::cout << "&=:  " << (c &= d) << "\n";
-	std::cout << "^=:  " << (c ^= d) << "\n";
-	std::cout << "<<=: " << (c <<= d) << "\n";
-	std::cout << ">>=: " << (c >>= d) << "\n";*/
+	std::cout << "Operations with library types\n";
+	std::cout << "\t" << "a:   " << a << "\n";
+	std::cout << "\t" << "u+:  " << +a << "\n";
+	std::cout << "\t" << "u-:  " << -a << "\n";
+	std::cout << "\t" << "+:   " << a + b << "\n";
+	std::cout << "\t" << "-:   " << a - b << "\n";
+	std::cout << "\t" << "*:   " << a * b << "\n";
+	std::cout << "\t" << "/:   " << a / b << "\n";
+	std::cout << "\t" << "%:   " << a % b << "\n";
+	std::cout << "\t" << "s++: " << a++ << "\n";
+	std::cout << "\t" << "s--: " << a-- << "\n";
+	std::cout << "\t" << "p++: " << ++a << "\n";
+	std::cout << "\t" << "p--: " << --a << "\n";
+	std::cout << "\t" << "+=:  " << (a += b) << "\n";
+	std::cout << "\t" << "-=:  " << (a -= b) << "\n";
+	std::cout << "\t" << "*=:  " << (a *= c) << "\n";
+	std::cout << "\t" << "/=:  " << (a /= d) << "\n";
+	std::cout << "\t" << "==:  " << (a == b) << "\n";
+	std::cout << "\t" << "!=:  " << (a != b) << "\n";
+	std::cout << "\t" << ">:   " << (a > b) << "\n";
+	std::cout << "\t" << "<:   " << (a < b) << "\n";
+	std::cout << "\t" << ">=:  " << (a >= b) << "\n";
+	std::cout << "\t" << "<=:  " << (a <= b) << "\n";
+	std::cout << "\t" << "~:   " << (~c) << '\n';
+	std::cout << "\t" << "|:   " << (c | d) << "\n";
+	std::cout << "\t" << "^:   " << (c ^ d) << "\n";
+	std::cout << "\t" << "&:   " << (c & d) << "\n";
+	std::cout << "\t" << "<<:  " << (c << d) << "\n";
+	std::cout << "\t" << ">>:  " << (c >> d) << "\n";
+	std::cout << "\t" << "|=:  " << (c |= d) << "\n";
+	std::cout << "\t" << "&=:  " << (c &= d) << "\n";
+	std::cout << "\t" << "^=:  " << (c ^= d) << "\n";
+	std::cout << "\t" << "<<=: " << (c <<= d) << "\n";
+	std::cout << "\t" << ">>=: " << (c >>= d) << "\n";
+
+	std::cout << "\nOperation with built-ins\n";
+	std::cout << "\t" << "+:   " << (c + 7) << "\n";
+	std::cout << "\t" << "-:   " << (7 - d) << "\n";
+	std::cout << "\t" << "*:   " << (c * 7) << "\n";
+	std::cout << "\t" << "/:   " << (7 / d) << "\n";
+	std::cout << "\t" << "==:  " << (c == 7) << "\n";
+	std::cout << "\t" << "!=:  " << (7 != c) << "\n";
+	std::cout << "\t" << ">:   " << (c > 7) << "\n";
+	std::cout << "\t" << "<:   " << (7 < d) << "\n";
+	std::cout << "\t" << ">=:  " << (c >= 7) << "\n";
+	std::cout << "\t" << "<=:  " << (7 <= d) << "\n";
+	std::cout << "\t" << "|:   " << (c | 7) << "\n";
+	std::cout << "\t" << "^:   " << (7 ^ d) << "\n";
+	std::cout << "\t" << "&:   " << (c & 7) << "\n";
+	std::cout << "\t" << "<<:  " << (7 << d) << "\n";
+	std::cout << "\t" << ">>:  " << (c >> 7) << "\n";
 }
 
 
