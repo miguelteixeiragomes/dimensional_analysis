@@ -13,9 +13,10 @@ void test1() {
 	int32<Time> b = a;
 	int64<> c = 7;
 	int64<> d = c;
-	/*float32<> e = 3.14;
-	float64<> f = 2.7;*/
-
+	float32<> e = 3.14;
+	float64<> f = 2.7;
+	
+	std::cout << a << '\n';
 	std::cout << "Operations with library types\n";
 	std::cout << "\t" << "a:   " << a << "\n";
 	std::cout << "\t" << "u+:  " << +a << "\n";
