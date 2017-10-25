@@ -71,6 +71,12 @@
 			public:
 				NumT value;
 
+				/*inline PrimitiveTypeBase() {}
+
+				inline PrimitiveTypeBase(NumT value) : value(value) {}
+				
+				inline PrimitiveTypeBase(PrimitiveType<NumT, Adimensional> x) : value(x.value) {}*/
+
 				inline operator NumT() {
 					return this->value;
 				}
@@ -92,6 +98,8 @@
 				}*/
 
 				inline PrimitiveType(PrimitiveTypeBase<NumT, Dims> prim) : value(prim.value) {}
+
+				//inline operator PrimitiveTypeBase<NumT, Dims>() { return PrimitiveTypeBase<NumT, Dims>(this->value); }
 
 				template<typename NumT2> inline PrimitiveType(PrimitiveType<NumT2, Dims> x) {
 					this->value = x.value;
@@ -310,8 +318,8 @@
 			template<typename NumT_lhs, typename NumT_rhs, typename Dims, typename Constraint = typename std::enable_if<std::is_integral<NumT_lhs>::value & std::is_integral<NumT_rhs>::value, void>::type>\
 				ERROR_MESSAGE<NumT_lhs, NumT_rhs, Dims> operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, NumT_rhs rhs);
 	
-		/*
-		SAME_UNITS_OPERATOR_WITH_C_PRIM(+, Addition_is_not_possible_between_Cpp_primitive_types_and_dimensioned_quantities)
+		
+		/*SAME_UNITS_OPERATOR_WITH_C_PRIM(+, Addition_is_not_possible_between_Cpp_primitive_types_and_dimensioned_quantities)
 		SAME_UNITS_OPERATOR_WITH_C_PRIM(-, Addition_is_not_possible_between_Cpp_primitive_types_and_dimensioned_quantities)
 	
 		MUL_OR_DIV_C_PRIM(*, __ADD_DIMENSIONS__)
@@ -328,8 +336,8 @@
 		BITWISE_BINARY_OPERATOR_C_PRIM(& , Bitwise_and_is_not_available_between_Cpp_primitive_types_and_dimensioned_quantities)
 		BITWISE_BINARY_OPERATOR_C_PRIM(^ , Bitwise_exclusive_or_is_not_available_between_Cpp_primitive_types_and_dimensioned_quantities)
 		BITWISE_BINARY_OPERATOR_C_PRIM(<<, Bitwise_left_shift_is_not_available_between_Cpp_primitive_types_and_dimensioned_quantities)
-		BITWISE_BINARY_OPERATOR_C_PRIM(>>, Bitwise_right_shift_is_not_available_between_Cpp_primitive_types_and_dimensioned_quantities)
-		*/
+		BITWISE_BINARY_OPERATOR_C_PRIM(>>, Bitwise_right_shift_is_not_available_between_Cpp_primitive_types_and_dimensioned_quantities)*/
+		
 	
 		template<typename NumT> struct Bitwise_negation_is_only_available_for_integers_and_not;
 		Bitwise_negation_is_only_available_for_integers_and_not<FLOAT32_T> operator~(PrimitiveType<FLOAT32_T, Adimensional> x);
