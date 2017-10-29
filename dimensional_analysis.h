@@ -59,51 +59,80 @@
 	
 	namespace INTERNAL_NAMESPACE {
 
+		#ifndef EXPLICIT_CONSTRUCTOR
+			#define EXPLICIT_CONSTRUCTOR 0
+		#endif
+
+		#if EXPLICIT_CONSTRUCTOR == 1
+			#define EXPLICIT explicit
+		#elif EXPLICIT_CONSTRUCTOR == 0
+			#define EXPLICIT
+		#else
+			static_assert(1, "'EXPLICIT_CONSTRUCTOR' can only be 0 or 1.");
+		#endif
+
 		template<typename NumT> struct NumericValue {
 			static const NumT value;
 		};
 
 		template<typename NumT, typename Dims> class PrimitiveType;
 
-		template<typename NumT, typename Dims> class PrimitiveTypeBase {};
+		template<typename NumT, typename Dims> class PrimitiveTypeBase {
+			public:
+				NumT value;
+
+				inline PrimitiveTypeBase() {}
+
+				inline PrimitiveTypeBase(NumT value) : value(value) {}
+		};
 
 		template<typename NumT> class PrimitiveTypeBase<NumT, Adimensional> {
 			public:
 				NumT value;
 
-				/*inline PrimitiveTypeBase() {}
+				inline PrimitiveTypeBase() {}
 
 				inline PrimitiveTypeBase(NumT value) : value(value) {}
 				
-				inline PrimitiveTypeBase(PrimitiveType<NumT, Adimensional> x) : value(x.value) {}*/
+				inline PrimitiveTypeBase(PrimitiveType<NumT, Adimensional> x) : value(x.value) {}
+
+				inline PrimitiveTypeBase<NumT, Adimensional> operator=(PrimitiveType<NumT, Adimensional> rhs) {
+					this->value = rhs.value;
+					return *this;
+				}
 
 				inline operator NumT() {
 					return this->value;
 				}
+
+				/*inline PrimitiveType<NumT, Adimensional> operator=(NumT rhs) {
+					this->value = rhs;
+					return *this;
+				}*/
 		};
 
 		template<typename NumT, typename Dims> class PrimitiveType : public PrimitiveTypeBase<NumT, Dims> {
 			static_assert(std::is_arithmetic<NumT>::value & !std::is_same<NumT, bool>::value, "Only C++ primitive numeric types are allowed as first template specialization of class 'PrimitiveType'.");
 		
 			public:
-				NumT value;
+				//NumT value;
 
 				inline PrimitiveType() {}
 
-				inline PrimitiveType(NumT value) : value(value) {}
+				EXPLICIT inline PrimitiveType(NumT value) : PrimitiveTypeBase<NumT, Dims>(value) {}
 
-				/*inline PrimitiveType<NumT, Dims> operator=(NumT rhs) {
+				inline PrimitiveType<NumT, Dims> operator=(NumT rhs) {
 					this->value = rhs;
 					return *this;
-				}*/
+				}
 
-				inline PrimitiveType(PrimitiveTypeBase<NumT, Dims> prim) : value(prim.value) {}
+				//inline PrimitiveType(PrimitiveTypeBase<NumT, Dims> prim) : value(prim.value) {}
 
 				//inline operator PrimitiveTypeBase<NumT, Dims>() { return PrimitiveTypeBase<NumT, Dims>(this->value); }
 
-				template<typename NumT2> inline PrimitiveType(PrimitiveType<NumT2, Dims> x) {
+				/*template<typename NumT2> inline PrimitiveType(PrimitiveType<NumT2, Dims> x) {
 					this->value = x.value;
-				}
+				}*/
 			
 				#define UNARY_PLUS_MINUS(OPERATOR)\
 					inline PrimitiveType<decltype( OPERATOR NumericValue<NumT>::value), Dims> operator OPERATOR () {\
@@ -246,13 +275,13 @@
 	
 		// Operator overloads between the library's adimensional primitive types and C++ primitive types (including 'bool')
 		#define SAME_UNITS_OPERATOR_WITH_C_PRIM(OPERATOR, ERROR_MESSAGE)\
-			template<typename NumT_lhs, typename NumT_rhs>\
+			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_lhs>::value, void>::type>\
 				inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
 						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs OPERATOR rhs.value);\
 					}\
 			\
-			template<typename NumT_lhs, typename NumT_rhs>\
+			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_rhs>::value, void>::type>\
 				inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional> lhs, NumT_rhs rhs) {\
 						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs.value OPERATOR rhs);\
@@ -260,10 +289,10 @@
 			\
 			template<typename NumT_lhs, typename NumT_rhs, typename Dims> struct ERROR_MESSAGE;\
 			\
-			template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
+			template<typename NumT_lhs, typename NumT_rhs, typename Dims, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_lhs>::value, void>::type>\
 				ERROR_MESSAGE<NumT_lhs, NumT_rhs, Dims> operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Dims> rhs);\
 			\
-			template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
+			template<typename NumT_lhs, typename NumT_rhs, typename Dims, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_rhs>::value, void>::type>\
 				ERROR_MESSAGE<NumT_lhs, NumT_rhs, Dims> operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, NumT_rhs rhs);
 
 		#define MUL_OR_DIV_C_PRIM(OPERATOR, CT_FUNC)\
@@ -319,7 +348,7 @@
 				ERROR_MESSAGE<NumT_lhs, NumT_rhs, Dims> operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, NumT_rhs rhs);
 	
 		
-		/*SAME_UNITS_OPERATOR_WITH_C_PRIM(+, Addition_is_not_possible_between_Cpp_primitive_types_and_dimensioned_quantities)
+		SAME_UNITS_OPERATOR_WITH_C_PRIM(+, Addition_is_not_possible_between_Cpp_primitive_types_and_dimensioned_quantities)
 		SAME_UNITS_OPERATOR_WITH_C_PRIM(-, Addition_is_not_possible_between_Cpp_primitive_types_and_dimensioned_quantities)
 	
 		MUL_OR_DIV_C_PRIM(*, __ADD_DIMENSIONS__)
@@ -336,7 +365,8 @@
 		BITWISE_BINARY_OPERATOR_C_PRIM(& , Bitwise_and_is_not_available_between_Cpp_primitive_types_and_dimensioned_quantities)
 		BITWISE_BINARY_OPERATOR_C_PRIM(^ , Bitwise_exclusive_or_is_not_available_between_Cpp_primitive_types_and_dimensioned_quantities)
 		BITWISE_BINARY_OPERATOR_C_PRIM(<<, Bitwise_left_shift_is_not_available_between_Cpp_primitive_types_and_dimensioned_quantities)
-		BITWISE_BINARY_OPERATOR_C_PRIM(>>, Bitwise_right_shift_is_not_available_between_Cpp_primitive_types_and_dimensioned_quantities)*/
+		BITWISE_BINARY_OPERATOR_C_PRIM(>>, Bitwise_right_shift_is_not_available_between_Cpp_primitive_types_and_dimensioned_quantities)
+		
 		
 	
 		template<typename NumT> struct Bitwise_negation_is_only_available_for_integers_and_not;
@@ -396,6 +426,8 @@
 	#undef MUL_OR_DIV_C_PRIM
 	#undef COMPARATOR_C_PRIM
 	#undef BITWISE_BINARY_OPERATOR_C_PRIM
+	#undef EXPLICIT_CONSTRUCTOR
+	#undef EXPLICIT
 
 	#define remove_dims(X) PrimitiveTypes<decltype(X.value), Adimensional>(X.value)
 	

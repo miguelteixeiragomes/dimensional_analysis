@@ -4,21 +4,22 @@
 
 class A { public: int val; };
 
+void func(int a) {}
+void func2(int64<Adimensional> a) {}
+
 class B : public A { public: B() {} };
 
 void test1() {
 	std::cout << std::boolalpha;
 
-	int32<Time> a = 5;
-	int32<Time> b = a;
-	int64<> c = 7;
+	int32<Time> a(5);
+	int32<Time> b(a);
+	int64<> c(7);
 	int64<> d = c;
-	float32<> e = 3.14;
-	float64<> f = 2.7;
-	
-	//std::cout << a + c << '\n';
-	int yo = c;
-	std::cout << yo << '\n';
+	float32<> e(3.14f);
+	float64<> f(2.7);
+
+	//func2(7);
 	std::cout << "Operations with library types\n";
 		std::cout << "\t" << "a:   " << a << "\n";
 		std::cout << "\t" << "u+:  " << +a << "\n";
