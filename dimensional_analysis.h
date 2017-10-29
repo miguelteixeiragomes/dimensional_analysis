@@ -59,16 +59,10 @@
 	
 	namespace INTERNAL_NAMESPACE {
 
-		#ifndef EXPLICIT_CONSTRUCTOR
-			#define EXPLICIT_CONSTRUCTOR 0
-		#endif
-
-		#if EXPLICIT_CONSTRUCTOR == 1
+		#ifdef EXPLICIT_CONSTRUCTOR
 			#define EXPLICIT explicit
-		#elif EXPLICIT_CONSTRUCTOR == 0
-			#define EXPLICIT
 		#else
-			static_assert(1, "'EXPLICIT_CONSTRUCTOR' can only be 0 or 1.");
+			#define EXPLICIT
 		#endif
 
 		template<typename NumT> struct NumericValue {
@@ -427,6 +421,9 @@
 	#undef COMPARATOR_C_PRIM
 	#undef BITWISE_BINARY_OPERATOR_C_PRIM
 	#undef EXPLICIT_CONSTRUCTOR
+	#ifdef EXPLICIT_CONSTRUCTOR
+		#undef EXPLICIT_CONSTRUCTOR
+	#endif
 	#undef EXPLICIT
 
 	#define remove_dims(X) PrimitiveTypes<decltype(X.value), Adimensional>(X.value)
