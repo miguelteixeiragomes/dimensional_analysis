@@ -2,6 +2,7 @@ import subprocess
 import os
 import random
 from multiprocessing import Pool
+random.seed(0)
 
 Dims = ["Adimensional", "Time", "Length"]
 built_in_types_integer = ["std::int8_t", "std::int16_t", "std::int32_t", "std::int64_t", "std::uint8_t", "std::uint16_t", "std::uint32_t", "std::uint64_t"]
@@ -18,18 +19,27 @@ my_types = {"std::int8_t"   : "int8",
             "float"         : "float32",
             "double"        : "float64",
             "long double"   : "float128"}
+binary_operators = ['+', '-', '*', '/', '%', '|', '^', '&', '<<', '>>', '==', '!=', '<', '>', '<=', '>=']
+compound_assignment = ['+=', '-=', '*=', '/=', '%=', '|=', '^=', '&=', '<<=', '>>=']
+
+def type_is_float(tp):         return tp in built_in_types_integer and tp not in built_in_types_integer
+def op_requires_same_unit(op): return op in ['+', '-', '|', '^', '&', '<<', '>>', '==', '!=', '<', '>', '<=', '>=', '+=', '-=', '|=', '^=', '&=', '<<=', '>>=']
+def op_is_bitwise(op):         return op in ['|', '^', '&', '<<', '>>', '|=', '^=', '&=', '<<=', '>>=']
+def op_is_compound(op):        return op in ['+=', '-=', '|=', '^=', '&=', '<<=', '>>=']
 
 
 is_var_char = lambda c: True if 'a' <= c <= 'z' or 'A' <= c <= 'Z' or c == '_' else False
 
-def compile_run(lines, suffix = "", skip_dim_anl = False):
-    cpp_name = "temp-test%s.cpp" % (suffix,)
-    exe_name = "temp-test%s.exe" % (suffix,)
-    cpl_out  = "temp-compiler_output%s.txt" % (suffix,)
+def compile_run(lines, suffix = "", skip_dim_anl = False, explicit_contr = False):
+    cpp_name = "testing_temp\\temp-test%s.cpp" % (suffix,)
+    exe_name = "testing_temp\\temp-test%s.exe" % (suffix,)
+    cpl_out  = "testing_temp\\temp-compiler_output%s.txt" % (suffix,)
     program = '''
         #include <iostream>
-        #include "dimensional_analysis.h"
         %s
+        %s
+        #include "../dimensional_analysis.h"
+
 
         class A {};
 
@@ -38,7 +48,9 @@ def compile_run(lines, suffix = "", skip_dim_anl = False):
             return 0;
         }
         '''
-    program = program % ("#define SKIP_DIMENSIONAL_ANALYSIS" if skip_dim_anl else "", ";".join([lines] if type(lines) == str else lines) + ';')
+    program = program % ("#define SKIP_DIMENSIONAL_ANALYSIS" if skip_dim_anl else "",
+                         "#define EXPLICIT_CONSTRUCTOR" if explicit_contr else "",
+                         ";".join([lines] if type(lines) == str else lines) + ';')
 
     file = open(cpp_name, 'w')
     file.write(program)
@@ -68,53 +80,81 @@ def interpret_compile_error(error_msg):
     while is_var_char(err[i]): i += 1
     return err[:i]
 
-def test_add_sub_unit(lhs_dims, rhs_dims, lhs_t, rhs_t):
-    lines = ["std::cout << (%s<%s>(16) + %s<%s>(32)) << std::endl;" % (my_types[lhs_t], lhs_dims, my_types[rhs_t], rhs_dims),
-             "std::cout << (%s<%s>(32) - %s<%s>(16));" % (my_types[lhs_t], lhs_dims, my_types[rhs_t], rhs_dims)]
-    cmp_msg, run_msg = compile_run(lines, "__%s_%s_%s_%s__" % (lhs_dims, rhs_dims, lhs_t, rhs_t))
+def unexpected_compile_error(compile_error, lines):
+    return "Unexpected compilation error:\n\n>>> " + compile_error.replace('\n', '\n>>> ') + "\n\nwhile running the following lines:\n    " + '\n    '.join(lines)
 
-    if lhs_dims == rhs_dims:
-        if cmp_msg == "":
-            if [float(i) for i in run_msg.split('\n')] != [32+16, 16]:
-                return "Incorrect output obtained:\n\n>>> " + run_msg.replace('\n', '\n>>> ') + "\n\nwhile running the following lines:\n    " + '\n    '.join(lines)
+def unexpected_output(output, lines):
+    return "Incorrect output obtained:\n\n>>> " + output.replace('\n', '\n>>> ') + "\n\nwhile running the following lines:\n    " + '\n    '.join(lines)
+
+def test_binary_operator_unit(args):
+    lhs_dims, rhs_dims, lhs_t, rhs_t, operator, skip_dim_anl, expl_constr  =  args
+    num_a, num_b = "7", "2"
+
+    lines = ["%s bi_a = %s" % (lhs_t, num_a),
+             "%s bi_b = %s" % (rhs_t, num_b),
+             "auto bi_c = bi_a %s bi_b" % (operator,),
+             "%s<%s> lt_a(%s)" % (my_types[lhs_t], lhs_dims, num_a),
+             "%s<%s> lt_b(%s)" % (my_types[rhs_t], rhs_dims, num_b),
+             "auto lt_c = lt_a + lt_b",
+             "std::cout << bi_c == lt_c.value << std::endl",
+             "std::cout << std::is_same<decltype(bi_c), decltype(lt_c.value)>::result"]
+
+    cmp_msg   , run_msg    = compile_run(lines, "__%s_%s_%s_%s_%s_%s_%s_%s_%s__" % (lhs_dims, rhs_dims, my_types[lhs_t], my_types[rhs_t], skip_dim_anl, expl_constr, hash(operator), skip_dim_anl, expl_constr))
+
+    if (not type_is_float(lhs_t)) and (not type_is_float(rhs_t)): # both types are integer
+        if op_is_bitwise(operator): # bitwise bitwise operation between integers
+            if op_is_compound(operator): # compound bitwise operation between integers
+                pass
+            else: # binary bitwise operation between integers
+                pass
+        elif op_requires_same_unit(operator):
+            if op_is_compound(operator): pass
+            else: pass
         else:
-            return "Unexpected compilation error:\n\n>>> " + cmp_msg.replace('\n', '\n>>> ') + "\n\nwhile running the following lines:\n    " + '\n    '.join(lines)
+            if op_is_compound(operator): pass
+            else: pass
+    else: # there is at least one float
+        if op_is_bitwise(operator):
+            if op_is_compound(operator): pass
+            else: pass
+        elif op_requires_same_unit(operator):
+            if op_is_compound(operator): pass
+            else: pass
+        else:
+            if op_is_compound(operator): pass
+            else: pass
+
 
     return ""
 
-def test_add_sub(pool = None):
+def test_binary_operators(pool, Dimensions, types, operators):
     size = len(Dims)**2 * len(built_in_types_numeric)**2
     i = 0
     cases = []
-    for lhs_dims in Dims:
-        for rhs_dims in Dims:
-            for lhs_t in built_in_types_numeric:
-                for rhs_t in built_in_types_numeric:
-                    cases.append( (lhs_dims, rhs_dims, lhs_t, rhs_t) )
+    for lhs_dims in Dimensions:
+        for rhs_dims in Dimensions:
+            for lhs_t in types:
+                for rhs_t in types:
+                    for op in operators:
+                        for skip_dimensional_analysis in [False, True]:
+                            for explicit_constructor in [False, True]:
+                                cases.append( (lhs_dims, rhs_dims, lhs_t, rhs_t, op, skip_dimensional_analysis, explicit_constructor) )
 
     random.shuffle(cases)
 
-    if pool is None:
-        for case in cases:
-            print("\rRunning binary + and - test: " + str(round(100*i/size, 1)) + "%\t\t", end = '')
-            msg = test_add_sub_unit(*case)
+    n = len(cases)//1000
+    I = 0
+    for seq in [i for i in [cases[i:i+n if i+n < len(cases) else -1] for i in range(0, len(cases), n)] if i != []]:
+        print("\rRunning binary + and - test: " + str(I/10) + "%\t\t", end = "")
+        for msg in pool.map(test_binary_operator_unit, seq):
             if msg != "":
                 raise Exception(msg)
-            i += 1
+        I += 1
 
-        print("\rRunning binary + and - test: passed!")
-
-    else:
-        print("Running binary + and - test: ", end = "")
-        aux_func = lambda x: test_add_sub_unit(*x)
-        for msg in pool.map(aux_func, cases):
-            if msg != "":
-                raise Exception(msg)
-        print("passed!")
-
+    print("\rRunning binary + and - test: passed!")
 
 
 if __name__ == "__main__":
-    pool = Pool(4)
+    pool = Pool(8)
 
-    test_add_sub(pool)
+    test_binary_operators(pool, Dims, built_in_types_numeric, binary_operators + compound_assignment)

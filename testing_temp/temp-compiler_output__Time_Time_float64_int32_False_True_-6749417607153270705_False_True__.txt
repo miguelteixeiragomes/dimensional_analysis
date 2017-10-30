@@ -1,0 +1,7 @@
+testing_temp\temp-test__Time_Time_float64_int32_False_True_-6749417607153270705_False_True__.cpp: In function 'int main(int, char**)':
+testing_temp\temp-test__Time_Time_float64_int32_False_True_-6749417607153270705_False_True__.cpp:11:174: error: invalid operands of types 'double' and '<unresolved overloaded function type>' to binary 'operator<<'
+             double bi_a = 7;std::int32_t bi_b = 2;auto bi_c = bi_a /= bi_b;float64<Time> lt_a(7);int32<Time> lt_b(2);auto lt_c = lt_a + lt_b;std::cout << bi_c == lt_c.value << std::endl;std::cout << std::is_same<decltype(bi_c), decltype(lt_c.value)>::result;
+                                                                                                                                                                   ~~~~~~~~~~~^~~~~~
+testing_temp\temp-test__Time_Time_float64_int32_False_True_-6749417607153270705_False_True__.cpp:11:200: error: 'result' is not a member of 'std::is_same<double, double>'
+             double bi_a = 7;std::int32_t bi_b = 2;auto bi_c = bi_a /= bi_b;float64<Time> lt_a(7);int32<Time> lt_b(2);auto lt_c = lt_a + lt_b;std::cout << bi_c == lt_c.value << std::endl;std::cout << std::is_same<decltype(bi_c), decltype(lt_c.value)>::result;
+                                                                                                                                                                                                        ^~~

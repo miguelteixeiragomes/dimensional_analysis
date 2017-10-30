@@ -4,8 +4,6 @@
 #include <cmath>
 
 
-//#define SKIP_DIMENSIONAL_ANALYSIS
-
 #ifndef INT8
 	#define INT8  int8
 #endif
@@ -382,6 +380,40 @@
 	}
 
 
+	// cmath adapted functions
+	#define NUM_RET_TYPE typename std::conditional<std::is_floating_point<NumT>::value, NumT, double>::type
+	#define RET_DIMS typename __MUL_DIMENSIONS_BY_SCALAR__<std::ratio<exp_num, exp_den>, Dims>::result
+	template<std::int64_t exp_num, std::int64_t exp_den = 1, typename NumT, typename Dims>
+		inline INTERNAL_NAMESPACE::PrimitiveType<NUM_RET_TYPE, RET_DIMS>
+			pow(INTERNAL_NAMESPACE::PrimitiveType<NumT, Dims> x) {
+				return 
+					INTERNAL_NAMESPACE::PrimitiveType<NUM_RET_TYPE, RET_DIMS>(
+						std::pow(x.value, NUM_RET_TYPE(exp_num) / NUM_RET_TYPE(exp_den)));
+			}
+	#undef NUM_RET_TYPE
+	#undef RET_DIMS
+
+	#define NUM_RET_TYPE typename std::conditional<std::is_floating_point<NumT>::value, NumT, double>::type
+	#define RET_DIMS typename __MUL_DIMENSIONS_BY_SCALAR__<std::ratio<1, 2>, Dims>::result
+	template<typename NumT, typename Dims>
+		inline INTERNAL_NAMESPACE::PrimitiveType<NUM_RET_TYPE, RET_DIMS>
+			sqrt(INTERNAL_NAMESPACE::PrimitiveType<NumT, Dims> x) {
+				return INTERNAL_NAMESPACE::PrimitiveType<NUM_RET_TYPE, RET_DIMS>( std::sqrt(x.value) );
+			}
+	#undef NUM_RET_TYPE
+	#undef RET_DIMS
+
+	#define NUM_RET_TYPE typename std::conditional<std::is_floating_point<NumT>::value, NumT, double>::type
+	#define RET_DIMS typename __MUL_DIMENSIONS_BY_SCALAR__<std::ratio<1, 3>, Dims>::result
+	template<typename NumT, typename Dims>
+		inline INTERNAL_NAMESPACE::PrimitiveType<NUM_RET_TYPE, RET_DIMS>
+			cbrt(INTERNAL_NAMESPACE::PrimitiveType<NumT, Dims> x) {
+				return INTERNAL_NAMESPACE::PrimitiveType<NUM_RET_TYPE, RET_DIMS>( std::cbrt(x.value) );
+			}
+	#undef NUM_RET_TYPE
+	#undef RET_DIMS
+
+
 	// typedefing the primitive types
 	template<typename Dims = Adimensional> using INT8  = INTERNAL_NAMESPACE::PrimitiveType<std::int8_t , Dims>;
 	template<typename Dims = Adimensional> using INT16 = INTERNAL_NAMESPACE::PrimitiveType<std::int16_t, Dims>;
@@ -396,15 +428,6 @@
 	template<typename Dims = Adimensional> using FLOAT32  = INTERNAL_NAMESPACE::PrimitiveType<FLOAT32_T , Dims>;
 	template<typename Dims = Adimensional> using FLOAT64  = INTERNAL_NAMESPACE::PrimitiveType<FLOAT64_T , Dims>;
 	template<typename Dims = Adimensional> using FLOAT128 = INTERNAL_NAMESPACE::PrimitiveType<FLOAT128_T, Dims>;
-
-
-	// cmath adapted functions
-	/*template<std::uint64_t exp_num, std::int64_t exp_den, typename NumT, typename Dims>
-		inline PrimitiveType<NumT, typename __MUL_DIMENSIONS_BY_SCALAR__<std::ratio<exp_num, exp_den>, Dims>::result>
-			pow(PrimitiveType<NumT, Dims> x) {
-				using numeric_type = typename std::conditional<exp_num % exp_den, int, double>::type;
-				return std::pow(x.value, numeric_type(exp_num) / numeric_type(exp_den));
-			}*/
 
 
 	#undef UNARY_PLUS_MINUS
@@ -443,6 +466,15 @@
 	template<typename Dims = Adimensional> using FLOAT32  = FLOAT32_T;
 	template<typename Dims = Adimensional> using FLOAT64  = FLOAT64_T;
 	template<typename Dims = Adimensional> using FLOAT128 = FLOAT128_T;
+
+
+	#define NUM_RET_TYPE typename std::conditional<std::is_floating_point<NumT>::value, NumT, double>::type
+	template<std::int64_t exp_num, std::int64_t exp_den = 1, typename NumT> 
+		inline NUM_RET_TYPE pow(NumT base) {
+			return std::pow(base, NUM_RET_TYPE(exp_num) / NUM_RET_TYPE(exp_den));
+		}
+	#undef NUM_RET_TYPE
+
 
 	#define remove_dims(X) X
 

@@ -1,0 +1,10 @@
+testing_temp\temp-test__Adimensional_Adimensional_float32_float64_True_False_-8563550636632283153_True_False__.cpp: In function 'int main(int, char**)':
+testing_temp\temp-test__Adimensional_Adimensional_float32_float64_True_False_-8563550636632283153_True_False__.cpp:11:61: error: invalid operands of types 'float' and 'double' to binary 'operator&'
+             float bi_a = 7;double bi_b = 2;auto bi_c = bi_a & bi_b;float32<Adimensional> lt_a(7);float64<Adimensional> lt_b(2);auto lt_c = lt_a + lt_b;std::cout << bi_c == lt_c.value << std::endl;std::cout << std::is_same<decltype(bi_c), decltype(lt_c.value)>::result;
+                                                        ~~~~~^~~~~~
+testing_temp\temp-test__Adimensional_Adimensional_float32_float64_True_False_-8563550636632283153_True_False__.cpp:11:184: error: invalid operands of types 'double' and '<unresolved overloaded function type>' to binary 'operator<<'
+             float bi_a = 7;double bi_b = 2;auto bi_c = bi_a & bi_b;float32<Adimensional> lt_a(7);float64<Adimensional> lt_b(2);auto lt_c = lt_a + lt_b;std::cout << bi_c == lt_c.value << std::endl;std::cout << std::is_same<decltype(bi_c), decltype(lt_c.value)>::result;
+                                                                                                                                                                             ~~~~~~~~~~~^~~~~~
+testing_temp\temp-test__Adimensional_Adimensional_float32_float64_True_False_-8563550636632283153_True_False__.cpp:11:259: error: template argument 1 is invalid
+             float bi_a = 7;double bi_b = 2;auto bi_c = bi_a & bi_b;float32<Adimensional> lt_a(7);float64<Adimensional> lt_b(2);auto lt_c = lt_a + lt_b;std::cout << bi_c == lt_c.value << std::endl;std::cout << std::is_same<decltype(bi_c), decltype(lt_c.value)>::result;
+                                                                                                                                                                                                                                                                   ^
