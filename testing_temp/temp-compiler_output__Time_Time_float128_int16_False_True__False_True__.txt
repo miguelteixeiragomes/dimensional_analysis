@@ -1,3 +1,0 @@
-g++: error: testing_temp\temp-test__Time_Time_float128_int16_False_True__False_True__.cpp: No such file or directory
-g++: fatal error: no input files
-compilation terminated.
