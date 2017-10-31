@@ -29,9 +29,9 @@ This library supports a number of compilation options through macro definitions:
   - `#define UINT16 <name>` - defaults to `uint16` and encapsulates the built-in type `std::uint16_t`;
   - `#define UINT32 <name>` - defaults to `uint32` and encapsulates the built-in type `std::uint32_t`;
   - `#define UINT64 <name>` - defaults to `uint64` and encapsulates the built-in type `std::uint64_t`;
-  - `#define FLOAT32 <name>` - defaults to `float32` and encapsulates the built-in type `FLOAT32_T` (defined as ahead);
-  - `#define FLOAT64 <name>` - defaults to `float64` and encapsulates the built-in type `FLOAT64_T` (defined as ahead);
-  - `#define FLOAT128 <name>` - defaults to `float128` and encapsulates the built-in type `FLOAT128_T` (defined as ahead);
+  - `#define FLOAT32 <name>` - defaults to `float32` and encapsulates the built-in type `FLOAT32_T` (see ahead);
+  - `#define FLOAT64 <name>` - defaults to `float64` and encapsulates the built-in type `FLOAT64_T` (see ahead);
+  - `#define FLOAT128 <name>` - defaults to `float128` and encapsulates the built-in type `FLOAT128_T` (see ahead);
 
 * `#define FLOAT32_T <name>` - defaults to `float`;
 * `#define FLOAT64_T <name>` - defaults to `double`;

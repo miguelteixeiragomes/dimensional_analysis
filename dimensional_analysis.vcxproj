@@ -163,6 +163,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   <ItemGroup>
     <ClInclude Include="dimensions.h" />
     <ClInclude Include="dimensional_analysis.h" />
+    <ClInclude Include="primitive_types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tests.cpp" />

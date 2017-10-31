@@ -1,15 +1,12 @@
 #include <iostream>
 #include <limits>
 //#define EXPLICIT_CONSTRUCTOR
-#define SKIP_DIMENSIONAL_ANALYSIS
+//#define SKIP_DIMENSIONAL_ANALYSIS
 #include "dimensional_analysis.h"
 
-class A { public: int val; };
 
-void func(int a) {}
-void func2(int64<Adimensional> a) {}
-
-class B : public A { public: B() {} };
+void adim_func(long long x) {}
+void time_func(int64<Time> x) {}
 
 void test1() {
 	std::cout << std::boolalpha;
@@ -20,7 +17,7 @@ void test1() {
 	int64<> d = c;
 	float32<> e(3.14f);
 	float64<> f(2.7);
-	
+
 	std::cout << "Operations with library types\n";
 		std::cout << "\t" << "a:   " << a << "\n";
 		std::cout << "\t" << "u+:  " << +a << "\n";
@@ -71,16 +68,18 @@ void test1() {
 		std::cout << "\t" << "^:   " << (7 ^ d) << "\n";
 		std::cout << "\t" << "&:   " << (c & 7) << "\n";
 		std::cout << "\t" << "<<:  " << (7 << d) << "\n";
-		std::cout << "\t" << ">>:  " << (c >> 7) << "\n";
+		std::cout << "\t" << ">>:  " << (c >> 7) << "\n\n";
 
-	//std::cout << pow<7>(pow<1, 7>(a)) << '\n';
+	std::cout << pow<7>(pow<1, 7>(a)) << '\n';
+	std::cout << float64<Length>(5) + sqrt(float64<Area>(25)) << '\n';
 	std::cout << float64<Length>(5) + cbrt(float64<Volume>(125)) << '\n';
+	adim_func(c);
+	time_func(a);
 }
 
 
 int main(int argc, char* argv[]) {
 	test1();
 
-	//system("pause");
 	return 0;
 }
