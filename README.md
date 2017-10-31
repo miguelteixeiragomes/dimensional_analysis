@@ -17,6 +17,6 @@ However, the library should work with any C++11 compliant compiler.
 
 This library supports a number of compilation options through macro definitions:
 
-* ```SKIP_DIMENSIONAL_ANALYSIS``` - if this directive is defined the dimensional analysis is skipped entirely guaranteeing removing any of the library's overhead and speeding the up the compilation.
+* `SKIP_DIMENSIONAL_ANALYSIS` - if this directive is defined the dimensional analysis is skipped entirely guaranteeing removing any of the library's overhead and speeding the up the compilation.
 * EXPLICIT_CONSTRUCTOR - if this directive is defined the constructor of the library's primitive types is made explicit.
 * INT8 <name> - this directive defaults to defines <name> as the 
