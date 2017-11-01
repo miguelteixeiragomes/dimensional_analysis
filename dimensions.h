@@ -2,10 +2,10 @@
 
 
 template<typename length, 
-			typename time, 
-			typename mass, 
-			typename charge,
-			typename temperature> 
+		 typename time, 
+		 typename mass, 
+		 typename charge,
+		 typename temperature> 
 	struct Dimensions {
 		typedef length      LENGTH;
 		typedef time        TIME;

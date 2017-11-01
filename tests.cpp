@@ -75,6 +75,7 @@ void test1() {
 	std::cout << float64<Length>(5) + cbrt(float64<Volume>(125)) << '\n';
 	adim_func(c);
 	time_func(a);
+	float64<Acceleration> ac = (float64<Velocity>(3e8) + float64<Length>(3.14) / float32<Time>(2.7)) / float64<Time>(1.0);
 }
 
 

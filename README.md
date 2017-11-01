@@ -8,7 +8,7 @@ This library implements compile time dimensional analysis in C++ through templat
 
 The library is composed only of header files. To use it, simply include the file 'dimensional_analysis.h'. The compilers tested were
 
-* MS Visual C++ 14;
+* MS Visual C++ 19.00.24215.1;
 * GCC - 6.3.0/7.2.0
 
 However, the library should work with any C++11 compliant compiler.
@@ -37,5 +37,24 @@ This library supports a number of compilation options through macro definitions:
 * `#define FLOAT64_T <name>` - defaults to `double`;
 * `#define FLOAT128_T <name>` - defaults to `long double`;
 
+
 ## Usage
 
+The primitive types in the library are template classes that can be used to replace C++'s arithmetic built-in types. The template argument serves as the dimension.
+
+```
+int32<Adimensional> b(42); // 'a' is adimensional
+uint64<> b(42); // 'b' is also adimensional
+float32<Time> c(3.14); // 'c' as time dimensions
+```
+
+All the operations available for the built-in types are also available for the library's types. Compilation will fail with an undefined `struct`, that acts as an error message, whenever the operations do not have the correct units
+
+```
+float32<Time> a = float32<Time>(3.14) + float32<Time>(2.7); // compiles
+float32<Time> b = float32<Length>(3.14) + float32<Time>(2.7); // does not compile
+float64<Acceleration> ac = (float64<Velocity>(3e8) - float64<Length>(3.14) / float32<Time>(2.7)) / float64<Time>(1.0); // compiles
+```
+
+The C++ arithmetic built-in types can be operated with the library's types and are interpreted as `Adimensional`.
+The operators +, -, *, /, and % are implemented between types with any dimensions. The bitwise operators ~, |, ^, &, <<, and >> are only defined for adimensional quantities.
