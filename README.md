@@ -58,3 +58,5 @@ float64<Acceleration> ac = (float64<Velocity>(3e8) - float64<Length>(3.14) / flo
 
 The C++ arithmetic built-in types can be operated with the library's types and are interpreted as `Adimensional`.
 The operators +, -, *, /, and % are implemented between types with any dimensions. The bitwise operators ~, |, ^, &, <<, and >> are only defined for adimensional quantities.
+
+
