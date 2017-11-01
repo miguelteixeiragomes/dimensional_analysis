@@ -56,5 +56,4 @@ float32<Time> b = float32<Length>(3.14) + float32<Time>(2.7); // does not compil
 float64<Acceleration> ac = (float64<Velocity>(3e8) - float64<Length>(3.14) / float32<Time>(2.7)) / float64<Time>(1.0); // compiles
 ```
 
-The C++ arithmetic built-in types can be operated with the library's types and are interpreted as `Adimensional`.
-The operators +, -, *, /, and % are implemented between types with any dimensions. The bitwise operators ~, |, ^, &, <<, and >> are only defined for adimensional quantities.
+The C++ arithmetic built-in types can be operated with the library's types and are interpreted as `Adimensional`. The operators `+`, `-`, `*`, `/`, and `%` are implemented between types with any dimensions. The bitwise operators `~`, `|`, `^`, `&`, `<<`, and `>>` are only defined for adimensional quantities.
