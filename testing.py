@@ -50,7 +50,7 @@ def compile_run(lines, suffix = "", skip_dim_anl = False, explicit_contr = False
         '''
     program = program % ("#define SKIP_DIMENSIONAL_ANALYSIS" if skip_dim_anl else "",
                          "#define EXPLICIT_CONSTRUCTOR" if explicit_contr else "",
-                         ";".join([lines] if type(lines) == str else lines) + ';')
+                         ";\n".join([lines] if type(lines) == str else lines) + ';')
 
     file = open(cpp_name, 'w')
     file.write(program)
@@ -88,19 +88,21 @@ def unexpected_output(output, lines):
 
 def test_binary_operator_unit(args):
     lhs_dims, rhs_dims, lhs_t, rhs_t, operator, skip_dim_anl, expl_constr  =  args
-    num_a, num_b = "7", "2"
+    num_a, num_b = "7", "3"
 
     lines = ["%s bi_a = %s" % (lhs_t, num_a),
              "%s bi_b = %s" % (rhs_t, num_b),
-             "auto bi_c = bi_a %s bi_b" % (operator,),
+             "auto bi_c = (bi_a %s bi_b)" % (operator,),
              "%s<%s> lt_a(%s)" % (my_types[lhs_t], lhs_dims, num_a),
              "%s<%s> lt_b(%s)" % (my_types[rhs_t], rhs_dims, num_b),
-             "auto lt_c = lt_a + lt_b",
-             "std::cout << bi_c == lt_c.value << std::endl",
-             "std::cout << std::is_same<decltype(bi_c), decltype(lt_c.value)>::result"]
+             "auto lt_c = (lt_a %s lt_b)" % (operator,),
+             "std::cout << (bi_a == lt_a.value) << std::endl",
+             "std::cout << (bi_b == lt_b.value) << std::endl",
+             "std::cout << (bi_c == lt_c.value) << std::endl",
+             "std::cout << (std::is_same<decltype(bi_c), decltype(lt_c.value)>::value)"]
 
-    cmp_msg   , run_msg    = compile_run(lines, "__%s_%s_%s_%s_%s_%s_%s_%s_%s__" % (lhs_dims, rhs_dims, my_types[lhs_t], my_types[rhs_t], skip_dim_anl, expl_constr, hash(operator), skip_dim_anl, expl_constr))
-
+    cmp_msg, run_msg = compile_run(lines, "__%s_%s_%s_%s_%s_%s_%s_%s_%s__" % (lhs_dims, rhs_dims, my_types[lhs_t], my_types[rhs_t], skip_dim_anl, expl_constr, hash(operator), skip_dim_anl, expl_constr))
+    """
     if (not type_is_float(lhs_t)) and (not type_is_float(rhs_t)): # both types are integer
         if op_is_bitwise(operator): # bitwise bitwise operation between integers
             if op_is_compound(operator): # compound bitwise operation between integers
@@ -123,7 +125,10 @@ def test_binary_operator_unit(args):
         else:
             if op_is_compound(operator): pass
             else: pass
-
+    """
+    if run_msg != "":
+        if sum([int(i) for i in run_msg.split('\n')]) < 4:
+            return unexpected_output(run_msg, lines)
 
     return ""
 
@@ -158,3 +163,4 @@ if __name__ == "__main__":
     pool = Pool(8)
 
     test_binary_operators(pool, Dims, built_in_types_numeric, binary_operators + compound_assignment)
+    #test_binary_operators(pool, ["Adimensional"], ["std::int32_t"], ['+='])

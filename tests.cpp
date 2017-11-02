@@ -17,9 +17,9 @@ void test1() {
 	std::cout << std::boolalpha;
 
 	int32<Time> a(5);
-	int32<Time> b(a);
+	int32<Time> b(6);
 	int64<> c(7);
-	int64<> d = c;
+	int64<> d(8);
 	float32<> e(3.14f);
 	float64<> f(2.7);
 
@@ -36,7 +36,9 @@ void test1() {
 		std::cout << "\t" << "s--: " << a-- << "\n";
 		std::cout << "\t" << "p++: " << ++a << "\n";
 		std::cout << "\t" << "p--: " << --a << "\n";
+		std::cout << a << ", " << b << '\n';
 		std::cout << "\t" << "+=:  " << (a += b) << "\n";
+		std::cout << a << ", " << b << '\n';
 		std::cout << "\t" << "-=:  " << (a -= b) << "\n";
 		std::cout << "\t" << "*=:  " << (a *= c) << "\n";
 		std::cout << "\t" << "/=:  " << (a /= d) << "\n";
@@ -52,7 +54,9 @@ void test1() {
 		std::cout << "\t" << "&:   " << (c & d) << "\n";
 		std::cout << "\t" << "<<:  " << (c << d) << "\n";
 		std::cout << "\t" << ">>:  " << (c >> d) << "\n";
+		std::cout << c << ", " << d << '\n';
 		std::cout << "\t" << "|=:  " << (c |= d) << "\n";
+		std::cout << c << ", " << d << '\n';
 		std::cout << "\t" << "&=:  " << (c &= d) << "\n";
 		std::cout << "\t" << "^=:  " << (c ^= d) << "\n";
 		std::cout << "\t" << "<<=: " << (c <<= d) << "\n";
@@ -83,7 +87,6 @@ void test1() {
 	float64<Velocity> lightspeed = 1.0 / sqrt(float64<Permittivity>(8.85418781762039e-12)*float64<Permeability>(1.256637061435917e-6));
 	std::cout.precision(15);
 	std::cout << lightspeed << '\n';
-
 
 	std::complex<double> aaa;
 	Quantity<std::complex<double>, Time> aaaa(aaa);
