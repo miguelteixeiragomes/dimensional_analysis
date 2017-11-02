@@ -1,12 +1,17 @@
 #include <iostream>
+#include <iomanip>
 #include <limits>
+#include <vector>
+#include <complex>
 //#define EXPLICIT_CONSTRUCTOR
 //#define SKIP_DIMENSIONAL_ANALYSIS
 #include "dimensional_analysis.h"
 
 
+class CLASS {};
 void adim_func(long long x) {}
 void time_func(int64<Time> x) {}
+
 
 void test1() {
 	std::cout << std::boolalpha;
@@ -75,7 +80,13 @@ void test1() {
 	std::cout << float64<Length>(5) + cbrt(float64<Volume>(125)) << '\n';
 	adim_func(c);
 	time_func(a);
-	float64<Acceleration> ac = (float64<Velocity>(3e8) + float64<Length>(3.14) / float32<Time>(2.7)) / float64<Time>(1.0);
+	float64<Velocity> lightspeed = 1.0 / sqrt(float64<Permittivity>(8.85418781762039e-12)*float64<Permeability>(1.256637061435917e-6));
+	std::cout.precision(15);
+	std::cout << lightspeed << '\n';
+
+
+	std::complex<double> aaa;
+	Quantity<std::complex<double>, Time> aaaa(aaa);
 }
 
 

@@ -47,7 +47,7 @@
 		};
 
 		template<typename NumT, typename Dims, bool only_built_ins> class PrimitiveType : public PrimitiveTypeBase<NumT, Dims> {
-			static_assert((std::is_arithmetic<NumT>::value & !std::is_same<NumT, bool>::value) | !only_built_ins, "Only C++ primitive numeric types are allowed as first template specialization of class 'PrimitiveType'.");
+			//static_assert((std::is_arithmetic<NumT>::value & !std::is_same<NumT, bool>::value) | !only_built_ins, "Only C++ primitive numeric types are allowed as first template specialization of class 'PrimitiveType'.");
 		
 			public:
 				inline PrimitiveType() {}
@@ -121,7 +121,7 @@
 
 
 		// Operator overloads between the library's primitive types
-#define SAME_UNITS_OPERATOR(OPERATOR, ERROR_MESSAGE)\
+		#define SAME_UNITS_OPERATOR(OPERATOR, ERROR_MESSAGE)\
 			template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
 				inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Dims>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, PrimitiveType<NumT_rhs, Dims> rhs) {\
@@ -385,6 +385,9 @@
 	#define remove_dims(X) PrimitiveTypes<decltype(X.value), Adimensional>(X.value)
 
 
+	// generic dimensioned place-holder
+	template<typename T, typename Dims = Adimensional> using Quantity = INTERNAL_NAMESPACE::PrimitiveType<T, Dims, false>;
+
 #else
 
 	template<typename Dims = Adimensional> using INT8  = std::int8_t;
@@ -411,5 +414,9 @@
 
 
 	#define remove_dims(X) X
+
+
+	// generic dimensioned place-holder
+	//template<typename Dims, typename T> using Quantity = T;
 
 #endif
