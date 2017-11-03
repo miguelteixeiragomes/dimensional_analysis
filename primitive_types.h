@@ -47,7 +47,7 @@
 		};
 
 		template<typename NumT, typename Dims, bool only_built_ins> class PrimitiveType : public PrimitiveTypeBase<NumT, Dims> {
-			static_assert((std::is_arithmetic<NumT>::value & !std::is_same<NumT, bool>::value) | !only_built_ins, "Only C++ primitive numeric types are allowed as first template specialization of class 'PrimitiveType'.");
+			//static_assert((std::is_arithmetic<NumT>::value & !std::is_same<NumT, bool>::value) | !only_built_ins, "Only C++ primitive numeric types are allowed as first template specialization of class 'PrimitiveType'.");
 		
 			public:
 				inline PrimitiveType() {}
@@ -79,40 +79,12 @@
 						return temp;\
 					}
 
-				#define SAME_UNITS_COMPOUND_ASSIGNMENT(OPERATOR, ERROR_MESSAGE)\
-					template<typename NumT_rhs> inline PrimitiveType<NumT, Dims> operator OPERATOR (PrimitiveType<NumT_rhs, Dims> rhs){\
-						this->value OPERATOR rhs.value;\
-						return *this;\
-					}\
-					\
-					template<typename NumT_rhs, typename DimsRhs> struct ERROR_MESSAGE;\
-					\
-					template<typename NumT_rhs, typename DimsRhs>\
-						ERROR_MESSAGE<NumT_rhs, DimsRhs> operator OPERATOR (PrimitiveType<NumT_rhs, DimsRhs> rhs);
-
-				#define MUL_DIV_COMPOUND_ASSIGNMENT(OPERATOR, ERROR_MESSAGE)\
-					template<typename NumT_rhs> inline PrimitiveType<NumT, Dims> operator OPERATOR (PrimitiveType<NumT_rhs, Adimensional> rhs){\
-						this->value OPERATOR rhs.value;\
-						return *this;\
-					}\
-					\
-					template<typename NumT_rhs, typename DimsRhs> struct ERROR_MESSAGE;\
-					\
-					template<typename NumT_rhs, typename DimsRhs>\
-						ERROR_MESSAGE<NumT_rhs, DimsRhs> operator OPERATOR (PrimitiveType<NumT_rhs, DimsRhs> rhs);
-
 
 				UNARY_PLUS_MINUS(+)
 				UNARY_PLUS_MINUS(-)
 			
 				UNARY_INCREMENT_DECREMENT(++)
 				UNARY_INCREMENT_DECREMENT(--)
-
-				SAME_UNITS_COMPOUND_ASSIGNMENT(+=, Unmatched_dimensions_in_compound_addition_between)
-				SAME_UNITS_COMPOUND_ASSIGNMENT(-=, Unmatched_dimensions_in_compound_subtraction_between)
-
-				MUL_DIV_COMPOUND_ASSIGNMENT(*=, Compound_assignment_multiplication_is_only_possible_with_an_adimensional_right_hand_side)
-				MUL_DIV_COMPOUND_ASSIGNMENT(/=, Compound_assignment_division_is_only_possible_with_an_adimensional_right_hand_side)
 		};
 
 		template<typename NumT, typename Dims> inline std::ostream &operator<<(std::ostream &os, PrimitiveType<NumT, Dims> rhs) {
@@ -121,7 +93,7 @@
 
 
 		// Operator overloads between the library's primitive types
-#define SAME_UNITS_OPERATOR(OPERATOR, ERROR_MESSAGE)\
+		#define SAME_UNITS_OPERATOR(OPERATOR, ERROR_MESSAGE)\
 			template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
 				inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Dims>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, PrimitiveType<NumT_rhs, Dims> rhs) {\
@@ -131,6 +103,30 @@
 			template<typename NumT_lhs, typename DimsLhs, typename NumT_rhs, typename DimsRhs> struct ERROR_MESSAGE;\
 			\
 			template<typename NumT_lhs, typename NumT_rhs, typename DimsLhs, typename DimsRhs>\
+				ERROR_MESSAGE<NumT_lhs, DimsLhs, NumT_rhs, DimsRhs> operator OPERATOR (PrimitiveType<NumT_lhs, DimsLhs> lhs, PrimitiveType<NumT_rhs, DimsRhs> rhs);
+
+		#define SAME_UNITS_COMPOUND_ASSIGNMENT(OPERATOR, ERROR_MESSAGE)\
+			template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
+				inline PrimitiveType<NumT_lhs, Dims> operator OPERATOR (PrimitiveType<NumT_lhs, Dims>& lhs, PrimitiveType<NumT_rhs, Dims> rhs){\
+					lhs.value OPERATOR rhs.value;\
+					return lhs;\
+				}\
+			\
+			template<typename NumT_lhs, typename DimsLhs, typename NumT_rhs, typename DimsRhs> struct ERROR_MESSAGE;\
+			\
+			template<typename NumT_lhs, typename DimsLhs, typename NumT_rhs, typename DimsRhs>\
+				ERROR_MESSAGE<NumT_lhs, DimsLhs, NumT_rhs, DimsRhs> operator OPERATOR (PrimitiveType<NumT_lhs, DimsLhs> lhs, PrimitiveType<NumT_rhs, DimsRhs> rhs);
+
+		#define MUL_DIV_COMPOUND_ASSIGNMENT(OPERATOR, ERROR_MESSAGE)\
+			template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
+				inline PrimitiveType<NumT_lhs, Dims> operator OPERATOR (PrimitiveType<NumT_lhs, Dims>& lhs, PrimitiveType<NumT_rhs, Adimensional> rhs){\
+					lhs.value OPERATOR rhs.value;\
+					return lhs;\
+				}\
+			\
+			template<typename NumT_lhs, typename DimsLhs, typename NumT_rhs, typename DimsRhs> struct ERROR_MESSAGE;\
+			\
+			template<typename NumT_lhs, typename DimsLhs, typename NumT_rhs, typename DimsRhs>\
 				ERROR_MESSAGE<NumT_lhs, DimsLhs, NumT_rhs, DimsRhs> operator OPERATOR (PrimitiveType<NumT_lhs, DimsLhs> lhs, PrimitiveType<NumT_rhs, DimsRhs> rhs);
 
 		#define COMPARATOR(OPERATOR, ERROR_MESSAGE)\
@@ -166,7 +162,7 @@
 		#define BITWISE_COMPOUND_ASSIGNMENT(OPERATOR, ERROR_MESSAGE)\
 			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_integral<NumT_lhs>::value & std::is_integral<NumT_rhs>::value, void>::type>\
 				inline PrimitiveType<NumT_lhs, Adimensional>\
-					operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional> lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
+					operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional>& lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
 						return PrimitiveType<NumT_lhs, Adimensional>(lhs.value OPERATOR rhs.value);\
 					}\
 			\
@@ -181,6 +177,12 @@
 
 		MUL_OR_DIV(*, __ADD_DIMENSIONS__)
 		MUL_OR_DIV(/, __SUB_DIMENSIONS__)
+
+		SAME_UNITS_COMPOUND_ASSIGNMENT(+=, Unmatched_dimensions_in_compound_addition_between)
+		SAME_UNITS_COMPOUND_ASSIGNMENT(-=, Unmatched_dimensions_in_compound_subtraction_between)
+
+		MUL_DIV_COMPOUND_ASSIGNMENT(*=, Compound_assignment_multiplication_is_only_possible_with_an_adimensional_right_hand_side)
+		MUL_DIV_COMPOUND_ASSIGNMENT(/=, Compound_assignment_division_is_only_possible_with_an_adimensional_right_hand_side)
 
 		COMPARATOR(==, Unmatched_dimensions_in_comparison_operator_equal_between)
 		COMPARATOR(!=, Unmatched_dimensions_in_comparison_operator_unequal_between)
@@ -385,6 +387,9 @@
 	#define remove_dims(X) PrimitiveTypes<decltype(X.value), Adimensional>(X.value)
 
 
+	// generic dimensioned place-holder
+	template<typename T, typename Dims = Adimensional> using Quantity = INTERNAL_NAMESPACE::PrimitiveType<T, Dims, false>;
+
 #else
 
 	template<typename Dims = Adimensional> using INT8  = std::int8_t;
@@ -411,5 +416,9 @@
 
 
 	#define remove_dims(X) X
+
+
+	// generic dimensioned place-holder
+	template<typename T, typename Dims> using Quantity = T;
 
 #endif

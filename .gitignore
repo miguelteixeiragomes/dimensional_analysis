@@ -247,3 +247,4 @@ ModelManifest.xml
 # My ignores
 *.exe
 testing_temp/
+.idea/
