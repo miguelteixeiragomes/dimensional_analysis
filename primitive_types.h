@@ -419,6 +419,6 @@
 
 
 	// generic dimensioned place-holder
-	//template<typename Dims, typename T> using Quantity = T;
+	template<typename T, typename Dims> using Quantity = T;
 
 #endif
