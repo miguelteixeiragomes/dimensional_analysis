@@ -3,7 +3,7 @@
 #include <ratio>
 
 
-#define INTERNAL_NAMESPACE dimensional_analysis_viscera
+#define INTERNAL_NAMESPACE dim//ensional_analysis_viscera
 
 #ifndef INT8
 	#define INT8  int8
