@@ -54,6 +54,8 @@
 
 				EXPLICIT inline PrimitiveType(NumT value) : PrimitiveTypeBase<NumT, Dims>(value) {}
 
+				//EXPLICIT template<typename ...Args> inline PrimitiveType(Args... args) : PrimitiveTypeBase<T, Dims, false>(T(args...)) {}
+
 				inline PrimitiveType<NumT, Dims> operator=(NumT rhs) {
 					this->value = rhs;
 					return *this;
@@ -206,13 +208,13 @@
 	
 		// Operator overloads between the library's adimensional primitive types and C++ primitive types (including 'bool')
 		#define SAME_UNITS_OPERATOR_WITH_C_PRIM(OPERATOR, ERROR_MESSAGE)\
-			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_lhs>::value, void>::type>\
+			template<typename NumT_lhs, typename NumT_rhs/*, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_lhs>::value, void>::type*/>\
 				inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
 						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs OPERATOR rhs.value);\
 					}\
 			\
-			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_rhs>::value, void>::type>\
+			template<typename NumT_lhs, typename NumT_rhs/*, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_rhs>::value, void>::type*/>\
 				inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional> lhs, NumT_rhs rhs) {\
 						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs.value OPERATOR rhs);\
@@ -223,7 +225,7 @@
 			template<typename NumT_lhs, typename NumT_rhs, typename Dims, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_lhs>::value, void>::type>\
 				ERROR_MESSAGE<NumT_lhs, NumT_rhs, Dims> operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Dims> rhs);\
 			\
-			template<typename NumT_lhs, typename NumT_rhs, typename Dims, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_rhs>::value, void>::type>\
+			template<typename NumT_lhs, typename NumT_rhs, typename Dims/*, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_rhs>::value, void>::type*/>\
 				ERROR_MESSAGE<NumT_lhs, NumT_rhs, Dims> operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, NumT_rhs rhs);
 
 		#define MUL_OR_DIV_C_PRIM(OPERATOR, CT_FUNC)\
@@ -388,7 +390,13 @@
 
 
 	// generic dimensioned place-holder
-	template<typename T, typename Dims = Adimensional> using Quantity = INTERNAL_NAMESPACE::PrimitiveType<T, Dims, false>;
+	template<typename T, typename Dims = Adimensional> class Quantity : public INTERNAL_NAMESPACE::PrimitiveType<T, Dims> {
+		public:
+			inline Quantity() {}
+
+			template<typename ...Args> inline Quantity(Args... args) : INTERNAL_NAMESPACE::PrimitiveType<T, Dims>(T(args...)) {}
+	};
+	//template<typename T, typename Dims = Adimensional> using Quantity = INTERNAL_NAMESPACE::PrimitiveType<T, Dims>;
 
 #else
 

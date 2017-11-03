@@ -88,8 +88,10 @@ void test1() {
 	std::cout.precision(15);
 	std::cout << lightspeed << '\n';
 
-	std::complex<double> aaa;
-	Quantity<std::complex<double>, Time> aaaa(aaa);
+	Quantity<std::complex<double>, Time> comp1(1, 2);
+	Quantity<std::complex<double>, Time> comp2(1, 2);
+	std::complex<double> comp3;
+	(comp1 + comp2) + comp3;
 }
 
 
