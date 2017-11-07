@@ -8,12 +8,19 @@
 #include "dimensional_analysis.h"
 
 
-class CLASS {};
+class CLASS {
+public:
+	CLASS() {}
+	//CLASS operator++() { return CLASS(); }
+	CLASS operator++(int) { return CLASS(); }
+	//CLASS operator--() { return CLASS(); }
+	//CLASS operator--(int) { return CLASS(); }
+};
 void adim_func(long long x) {}
 void time_func(int64<Time> x) {}
 
 
-void test1() {
+void dimensions() {
 	std::cout << std::boolalpha;
 
 	int32<Time> a(5);
@@ -22,7 +29,7 @@ void test1() {
 	int64<> d(8);
 	float32<> e(3.14f);
 	float64<> f(2.7);
-
+	
 	std::cout << "Operations with library types\n";
 		std::cout << "\t" << "a:   " << a << "\n";
 		std::cout << "\t" << "u+:  " << +a << "\n";
@@ -36,9 +43,7 @@ void test1() {
 		std::cout << "\t" << "s--: " << a-- << "\n";
 		std::cout << "\t" << "p++: " << ++a << "\n";
 		std::cout << "\t" << "p--: " << --a << "\n";
-		std::cout << a << ", " << b << '\n';
 		std::cout << "\t" << "+=:  " << (a += b) << "\n";
-		std::cout << a << ", " << b << '\n';
 		std::cout << "\t" << "-=:  " << (a -= b) << "\n";
 		std::cout << "\t" << "*=:  " << (a *= c) << "\n";
 		std::cout << "\t" << "/=:  " << (a /= d) << "\n";
@@ -54,9 +59,7 @@ void test1() {
 		std::cout << "\t" << "&:   " << (c & d) << "\n";
 		std::cout << "\t" << "<<:  " << (c << d) << "\n";
 		std::cout << "\t" << ">>:  " << (c >> d) << "\n";
-		std::cout << c << ", " << d << '\n';
 		std::cout << "\t" << "|=:  " << (c |= d) << "\n";
-		std::cout << c << ", " << d << '\n';
 		std::cout << "\t" << "&=:  " << (c &= d) << "\n";
 		std::cout << "\t" << "^=:  " << (c ^= d) << "\n";
 		std::cout << "\t" << "<<=: " << (c <<= d) << "\n";
@@ -88,13 +91,15 @@ void test1() {
 	std::cout.precision(15);
 	std::cout << lightspeed << '\n';
 
-	std::complex<double> aaa;
-	Quantity<std::complex<double>, Time> aaaa(aaa);
+	Quantity<std::complex<double>, Adimensional> comp1(1, 2);
+	Quantity<std::complex<double>, Adimensional> comp2(1, 2);
+	std::complex<double> comp3(2, 1);
+	std::cout << (comp1 + comp2) << '\n';
 }
 
 
 int main(int argc, char* argv[]) {
-	test1();
+	dimensions();
 
 	return 0;
 }
