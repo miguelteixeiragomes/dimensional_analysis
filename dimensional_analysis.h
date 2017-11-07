@@ -1,9 +1,10 @@
 #pragma once
 #include <cmath>
 #include <ratio>
+//#include <boost/type_traits.hpp>
 
 
-#define INTERNAL_NAMESPACE dim//ensional_analysis_viscera
+#define INTERNAL_NAMESPACE dimensional_analysis_viscera
 
 #ifndef INT8
 	#define INT8  int8
@@ -50,10 +51,10 @@
 #endif
 
 
-////////////////////////////
+////////////////////////////////////////////////////////
 #include "dimensions.h"
 #include "primitive_types.h"
-////////////////////////////
+////////////////////////////////////////////////////////
 
 
 #ifdef SKIP_DIMENSIONAL_ANALYSIS

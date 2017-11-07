@@ -47,14 +47,14 @@
 		};
 
 		template<typename NumT, typename Dims/*, bool only_built_ins*/> class PrimitiveType : public PrimitiveTypeBase<NumT, Dims> {
-			//static_assert((std::is_arithmetic<NumT>::value & !std::is_same<NumT, bool>::value) | !only_built_ins, "Only C++ primitive numeric types are allowed as first template specialization of class 'PrimitiveType'.");
+			//static_assert((std::is_arithmetic<NumT>::value & !std::is_same<NumT, bool>::value), "Only C++ primitive numeric types are allowed as first template specialization of class 'PrimitiveType'.");
 		
 			public:
 				inline PrimitiveType() {}
 
 				EXPLICIT inline PrimitiveType(NumT value) : PrimitiveTypeBase<NumT, Dims>(value) {}
 
-				//EXPLICIT template<typename ...Args> inline PrimitiveType(Args... args) : PrimitiveTypeBase<T, Dims, false>(T(args...)) {}
+				EXPLICIT template<typename ...Args> inline PrimitiveType(Args... args) : PrimitiveTypeBase<NumT, Dims>(NumT(args...)) {}
 
 				inline PrimitiveType<NumT, Dims> operator=(NumT rhs) {
 					this->value = rhs;
@@ -150,7 +150,7 @@
 					}
 
 		#define BITWISE_BINARY_OPERATOR(OPERATOR, ERROR_MESSAGE)\
-			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_integral<NumT_lhs>::value & std::is_integral<NumT_rhs>::value, void>::type>\
+			template<typename NumT_lhs, typename NumT_rhs/*, typename Constraint = typename std::enable_if<std::is_integral<NumT_lhs>::value & std::is_integral<NumT_rhs>::value, void>::type*/>\
 				inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional> lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
 						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs.value OPERATOR rhs.value);\
@@ -162,7 +162,7 @@
 				ERROR_MESSAGE<NumT_lhs, DimsLhs, NumT_rhs, DimsRhs> operator OPERATOR (PrimitiveType<NumT_lhs, DimsLhs> lhs, PrimitiveType<NumT_rhs, DimsRhs> rhs);
 	
 		#define BITWISE_COMPOUND_ASSIGNMENT(OPERATOR, ERROR_MESSAGE)\
-			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_integral<NumT_lhs>::value & std::is_integral<NumT_rhs>::value, void>::type>\
+			template<typename NumT_lhs, typename NumT_rhs/*, typename Constraint = typename std::enable_if<std::is_integral<NumT_lhs>::value & std::is_integral<NumT_rhs>::value, void>::type*/>\
 				inline PrimitiveType<NumT_lhs, Adimensional>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional>& lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
 						return PrimitiveType<NumT_lhs, Adimensional>(lhs.value OPERATOR rhs.value);\
@@ -170,7 +170,7 @@
 			\
 			template<typename NumT_lhs, typename DimsLhs, typename NumT_rhs, typename DimsRhs> struct ERROR_MESSAGE;\
 			\
-			template<typename NumT_lhs, typename DimsLhs, typename NumT_rhs, typename DimsRhs, typename Constraint = typename std::enable_if<std::is_integral<NumT_lhs>::value & std::is_integral<NumT_rhs>::value, void>::type>\
+			template<typename NumT_lhs, typename DimsLhs, typename NumT_rhs, typename DimsRhs/*, typename Constraint = typename std::enable_if<std::is_integral<NumT_lhs>::value & std::is_integral<NumT_rhs>::value, void>::type*/>\
 				inline ERROR_MESSAGE<NumT_lhs, DimsLhs, NumT_rhs, DimsRhs>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, DimsLhs> lhs, PrimitiveType<NumT_rhs, DimsRhs> rhs);
 
@@ -208,25 +208,25 @@
 	
 		// Operator overloads between the library's adimensional primitive types and C++ primitive types (including 'bool')
 		#define SAME_UNITS_OPERATOR_WITH_C_PRIM(OPERATOR, ERROR_MESSAGE)\
-			template<typename NumT_lhs, typename NumT_rhs/*, typename AnyT, typename AnyDims, typename Constraint = typename std::enable_if<!std::is_same<NumT_lhs, PrimitiveType<AnyT, AnyDims>>::value, void>::type*/>\
+			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_lhs>::value, void>::type>\
 				inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
 						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs OPERATOR rhs.value);\
 					}\
 			\
-			template<typename NumT_lhs, typename NumT_rhs, typename Any, typename AnyDims, typename Constraint = typename std::enable_if<!std::is_same<NumT_rhs, PrimitiveType<Any, AnyDims>>::value, void>::type>\
+			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_rhs>::value, void>::type>\
 				inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional> lhs, NumT_rhs rhs) {\
 						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs.value OPERATOR rhs);\
-					}/*\
+					}\
 			\
 			template<typename NumT_lhs, typename NumT_rhs, typename Dims> struct ERROR_MESSAGE;\
 			\
-			template<typename NumT_lhs, typename NumT_rhs, typename Dims, typename Any, typename Constraint = typename std::enable_if<!std::is_same<NumT_lhs, PrimitiveType<Any, Adimensional>>::value, void>::type>\
+			template<typename NumT_lhs, typename NumT_rhs, typename Dims, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_rhs>::value, void>::type>\
 				ERROR_MESSAGE<NumT_lhs, NumT_rhs, Dims> operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Dims> rhs);\
 			\
-			template<typename NumT_lhs, typename NumT_rhs, typename Dims, typename Any, typename Constraint = typename std::enable_if<!std::is_same<NumT_rhs, PrimitiveType<Any, Adimensional>>::value, void>::type>\
-				ERROR_MESSAGE<NumT_lhs, NumT_rhs, Dims> operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, NumT_rhs rhs);*/
+			template<typename NumT_lhs, typename NumT_rhs, typename Dims, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_rhs>::value, void>::type>\
+				ERROR_MESSAGE<NumT_lhs, NumT_rhs, Dims> operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, NumT_rhs rhs);
 
 		#define MUL_OR_DIV_C_PRIM(OPERATOR, CT_FUNC)\
 			template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
@@ -386,17 +386,22 @@
 	#undef BITWISE_BINARY_OPERATOR_C_PRIM
 	#undef EXPLICIT
 
-	#define remove_dims(X) PrimitiveTypes<decltype(X.value), Adimensional>(X.value)
+	#define get_value(X) (X.value)
 
 
 	// generic dimensioned place-holder
-	template<typename T, typename Dims = Adimensional> class Quantity : public INTERNAL_NAMESPACE::PrimitiveType<T, Dims> {
-		public:
-			inline Quantity() {}
+	template<typename T, typename D = Adimensional> using Quantity = INTERNAL_NAMESPACE::PrimitiveType<T, D>;
+	/*template<typename T, typename D = Adimensional> class QuantAlt : public T {
+		using T::T;
 
-			template<typename ...Args> inline Quantity(Args... args) : INTERNAL_NAMESPACE::PrimitiveType<T, Dims>(T(args...)) {}
-	};
-	//template<typename T, typename Dims = Adimensional> using Quantity = INTERNAL_NAMESPACE::PrimitiveType<T, Dims>;
+		public:
+			struct Bitch_ass_nigga;
+			template<typename D2> inline Bitch_ass_nigga operator+=(QuantAlt<T, D2> rhs);
+			template<typename D2> inline Bitch_ass_nigga operator-=(QuantAlt<T, D2> rhs);
+			template<typename D2> inline QuantAlt<T, typename INTERNAL_NAMESPACE::__ADD_DIMENSIONS__<D, D2>::result> operator*(QuantAlt<T, D2> rhs) {
+				return QuantAlt<T, typename INTERNAL_NAMESPACE::__ADD_DIMENSIONS__<D, D2>::result>(T::operator*(*this, rhs));
+			}
+	};*/
 
 #else
 
@@ -423,10 +428,10 @@
 	#undef NUM_RET_TYPE
 
 
-	#define remove_dims(X) X
+	#define get_value(X) (X)
 
 
 	// generic dimensioned place-holder
-	template<typename T, typename Dims> using Quantity = T;
+	template<typename T, typename D> using Quantity = T;
 
 #endif
