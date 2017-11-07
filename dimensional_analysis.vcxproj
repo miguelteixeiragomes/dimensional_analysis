@@ -164,9 +164,13 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClInclude Include="dimensions.h" />
     <ClInclude Include="dimensional_analysis.h" />
     <ClInclude Include="primitive_types.h" />
+    <ClInclude Include="test_cuda.cuh" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tests.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="test_cuda.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

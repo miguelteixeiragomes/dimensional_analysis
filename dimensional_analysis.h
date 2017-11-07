@@ -50,6 +50,11 @@
 	#define FLOAT128_T long double
 #endif
 
+#ifdef __CUDACC__
+	#define CUDA_CALLABLE_MEMBER __host__ __device__
+#else
+	#define CUDA_CALLABLE_MEMBER
+#endif
 
 ////////////////////////////////////////////////////////
 #include "dimensions.h"
@@ -78,3 +83,4 @@
 #undef FLOAT64_T
 #undef FLOAT128_T
 #undef INTERNAL_NAMESPACE
+#undef CUDA_CALLABLE_MEMBER

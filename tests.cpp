@@ -6,6 +6,7 @@
 //#define EXPLICIT_CONSTRUCTOR
 //#define SKIP_DIMENSIONAL_ANALYSIS
 #include "dimensional_analysis.h"
+#include "test_cuda.cuh"
 
 
 class CLASS {
@@ -30,6 +31,7 @@ void dimensions() {
 	float32<> e(3.14f);
 	float64<> f(2.7);
 	
+	e = f;
 	std::cout << "Operations with library types\n";
 		std::cout << "\t" << "a:   " << a << "\n";
 		std::cout << "\t" << "u+:  " << +a << "\n";
@@ -97,9 +99,8 @@ void dimensions() {
 	std::cout << (comp1 + comp2) << '\n';
 }
 
-
 int main(int argc, char* argv[]) {
 	dimensions();
-
+	test_cuda();
 	return 0;
 }
