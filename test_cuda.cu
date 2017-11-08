@@ -9,8 +9,8 @@ __global__ void cuda_dims() {
 	float64<> f(2.7);
 	e = f;
 	a + b;
-		
-	//powf<7>(pow<1, 7>(a));
+	
+	pow<7>(pow<1, 7>(float32<Time>(7.2487)));
 	float32<Length>(5) + sqrtf(float32<Area>(25));
 	float64<Length>(5) + cbrt(float64<Volume>(125));
 	

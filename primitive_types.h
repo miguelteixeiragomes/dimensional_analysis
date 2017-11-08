@@ -339,13 +339,13 @@
 	#define NUM_RET_TYPE typename std::conditional<std::is_floating_point<NumT>::value, NumT, double>::type
 	#define RET_DIMS typename INTERNAL_NAMESPACE::__MUL_DIMENSIONS_BY_SCALAR__<std::ratio<exp_num, exp_den>, Dims>::result
 	template<long long exp_num, long long exp_den = 1, typename NumT, typename Dims>
-		inline INTERNAL_NAMESPACE::PrimitiveType<NUM_RET_TYPE, RET_DIMS>
+		CUDA_CALLABLE_MEMBER inline INTERNAL_NAMESPACE::PrimitiveType<NUM_RET_TYPE, RET_DIMS>
 			pow(INTERNAL_NAMESPACE::PrimitiveType<NumT, Dims> x) {
 				return 
 					INTERNAL_NAMESPACE::PrimitiveType<NUM_RET_TYPE, RET_DIMS>(
 						std::pow(x.value, NUM_RET_TYPE(exp_num) / NUM_RET_TYPE(exp_den)));
 			}
-	template<long long exp_num, long long exp_den = 1, typename NumT, typename Dims>
+	/*template<long long exp_num, long long exp_den = 1, typename NumT, typename Dims>
 		CUDA_CALLABLE_MEMBER inline INTERNAL_NAMESPACE::PrimitiveType<float, RET_DIMS>
 			powf(INTERNAL_NAMESPACE::PrimitiveType<float, Dims> x) {
 				return 
@@ -358,7 +358,7 @@
 				return 
 					INTERNAL_NAMESPACE::PrimitiveType<double, RET_DIMS>(
 						pow(x.value, double(exp_num) / double(exp_den)));
-			}
+			}*/
 	#undef NUM_RET_TYPE
 	#undef RET_DIMS
 

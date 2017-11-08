@@ -23,6 +23,18 @@ void float_func(float32<> x) {}
 
 
 void dimensions() {
+	std::int8_t  i8 ;
+	std::int16_t i16;
+	std::int32_t i32;
+	std::int64_t i64;
+	std::uint8_t  u8 ;
+	std::uint16_t u16;
+	std::uint32_t u32;
+	std::uint64_t u64;
+	float       f32;
+	double      f64;
+	long double f128;
+
 	std::cout << std::boolalpha;
 
 	int32<Time> a(5);
