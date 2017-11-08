@@ -21,16 +21,22 @@
 			public:
 				NumT value;
 
+				/*CUDA_CALLABLE_MEMBER inline PrimitiveTypeBase() {}
+
+				CUDA_CALLABLE_MEMBER inline PrimitiveTypeBase(NumT value) : value(value) {}*/
+
 				CUDA_CALLABLE_MEMBER inline PrimitiveTypeBase() {}
 
-				CUDA_CALLABLE_MEMBER inline PrimitiveTypeBase(NumT value) : value(value) {}
+				CUDA_CALLABLE_MEMBER inline explicit PrimitiveTypeBase(NumT value) : value(value) {}
+
+				template<typename ...Args> CUDA_CALLABLE_MEMBER inline explicit PrimitiveTypeBase(Args... args) : value(NumT(args...)) {}
 		};
 
 		template<typename NumT> class PrimitiveTypeBase<NumT, Adimensional> {
 			public:
 				NumT value;
 
-				CUDA_CALLABLE_MEMBER inline PrimitiveTypeBase() {}
+				/*CUDA_CALLABLE_MEMBER inline PrimitiveTypeBase() {}
 
 				CUDA_CALLABLE_MEMBER inline PrimitiveTypeBase(NumT value) : value(value) {}
 				
@@ -39,7 +45,13 @@
 				CUDA_CALLABLE_MEMBER inline PrimitiveTypeBase<NumT, Adimensional> operator=(PrimitiveType<NumT, Adimensional> rhs) {
 					this->value = rhs.value;
 					return *this;
-				}
+				}*/
+
+				CUDA_CALLABLE_MEMBER inline PrimitiveTypeBase() {}
+
+				CUDA_CALLABLE_MEMBER inline PrimitiveTypeBase(NumT value) : value(value) {}
+
+				template<typename ...Args> CUDA_CALLABLE_MEMBER inline PrimitiveTypeBase(Args... args) : value(NumT(args...)) {}
 
 				CUDA_CALLABLE_MEMBER inline operator NumT() {
 					return this->value;
@@ -48,16 +60,17 @@
 
 		template<typename NumT, typename Dims/*, bool only_built_ins*/> class PrimitiveType : public PrimitiveTypeBase<NumT, Dims> {
 			//static_assert((std::is_arithmetic<NumT>::value & !std::is_same<NumT, bool>::value), "Only C++ primitive numeric types are allowed as first template specialization of class 'PrimitiveType'.");
-		
+			using PrimitiveTypeBase<NumT, Dims>::PrimitiveTypeBase;
+
 			public:
-				CUDA_CALLABLE_MEMBER inline PrimitiveType() {}
+				/*CUDA_CALLABLE_MEMBER inline PrimitiveType() {}
 
-				template<typename ...Args> CUDA_CALLABLE_MEMBER EXPLICIT inline PrimitiveType(Args... args) : PrimitiveTypeBase<NumT, Dims>(NumT(args...)) {}
+				template<typename ...Args> CUDA_CALLABLE_MEMBER EXPLICIT inline PrimitiveType(Args... args) : PrimitiveTypeBase<NumT, Dims>(NumT(args...)) {}*/
 
-				CUDA_CALLABLE_MEMBER inline PrimitiveType<NumT, Dims> operator=(NumT rhs) {
+				/*CUDA_CALLABLE_MEMBER inline PrimitiveType<NumT, Dims> operator=(NumT rhs) {
 					this->value = rhs;
 					return *this;
-				}
+				}*/
 
 				template<typename NumT2> CUDA_CALLABLE_MEMBER inline PrimitiveType(PrimitiveType<NumT2, Dims> x) : PrimitiveTypeBase<NumT, Dims>(x.value) {}
 			
@@ -417,7 +430,6 @@
 		using T::T;
 
 		public:
-			struct Bitch_ass_nigga;
 			template<typename D2> inline Bitch_ass_nigga operator+=(QuantAlt<T, D2> rhs);
 			template<typename D2> inline Bitch_ass_nigga operator-=(QuantAlt<T, D2> rhs);
 			template<typename D2> inline QuantAlt<T, typename INTERNAL_NAMESPACE::__ADD_DIMENSIONS__<D, D2>::result> operator*(QuantAlt<T, D2> rhs) {

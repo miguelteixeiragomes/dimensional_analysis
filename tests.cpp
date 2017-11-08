@@ -18,7 +18,7 @@ public:
 	//CLASS operator--(int) { return CLASS(); }
 };
 void adim_func(long long x) {}
-void time_func(int64<Time> x) {}
+void time_func(int16<Time> x) {}
 
 
 void dimensions() {
@@ -93,10 +93,10 @@ void dimensions() {
 	std::cout.precision(15);
 	std::cout << lightspeed << '\n';
 
-	Quantity<std::complex<double>, Adimensional> comp1(1, 2);
+	/*Quantity<std::complex<double>, Adimensional> comp1(1, 2);
 	Quantity<std::complex<double>, Adimensional> comp2(1, 2);
 	std::complex<double> comp3(2, 1);
-	std::cout << (comp1 + comp2) << '\n';
+	std::cout << (comp1 + comp2) << '\n';*/
 }
 
 int main(int argc, char* argv[]) {

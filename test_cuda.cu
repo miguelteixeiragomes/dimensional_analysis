@@ -7,7 +7,7 @@ __global__ void cuda_dims() {
 	int64<> d(8);
 	float32<> e(3.14f);
 	float64<> f(2.7);
-	//e = f;
+	e = f;
 	a + b;
 	/*
 	pow<7>(pow<1, 7>(a));
