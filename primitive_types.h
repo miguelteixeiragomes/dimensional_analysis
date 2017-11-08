@@ -58,7 +58,7 @@
 				}
 		};
 
-		template<typename NumT, typename Dims/*, bool only_built_ins*/> class PrimitiveType : public PrimitiveTypeBase<NumT, Dims> {
+		template<typename NumT, typename Dims> class PrimitiveType : public PrimitiveTypeBase<NumT, Dims> {
 			//static_assert((std::is_arithmetic<NumT>::value & !std::is_same<NumT, bool>::value), "Only C++ primitive numeric types are allowed as first template specialization of class 'PrimitiveType'.");
 			using PrimitiveTypeBase<NumT, Dims>::PrimitiveTypeBase;
 
@@ -345,6 +345,20 @@
 					INTERNAL_NAMESPACE::PrimitiveType<NUM_RET_TYPE, RET_DIMS>(
 						std::pow(x.value, NUM_RET_TYPE(exp_num) / NUM_RET_TYPE(exp_den)));
 			}
+	template<long long exp_num, long long exp_den = 1, typename NumT, typename Dims>
+		CUDA_CALLABLE_MEMBER inline INTERNAL_NAMESPACE::PrimitiveType<float, RET_DIMS>
+			powf(INTERNAL_NAMESPACE::PrimitiveType<float, Dims> x) {
+				return 
+					INTERNAL_NAMESPACE::PrimitiveType<float, RET_DIMS>(
+						powf(x.value, float(exp_num) / float(exp_den)));
+			}
+	template<long long exp_num, long long exp_den = 1, typename NumT, typename Dims>
+		CUDA_CALLABLE_MEMBER inline INTERNAL_NAMESPACE::PrimitiveType<double, RET_DIMS>
+			pow(INTERNAL_NAMESPACE::PrimitiveType<double, Dims> x) {
+				return 
+					INTERNAL_NAMESPACE::PrimitiveType<double, RET_DIMS>(
+						pow(x.value, double(exp_num) / double(exp_den)));
+			}
 	#undef NUM_RET_TYPE
 	#undef RET_DIMS
 
@@ -371,25 +385,17 @@
 			cbrt(INTERNAL_NAMESPACE::PrimitiveType<NumT, Dims> x) {
 				return INTERNAL_NAMESPACE::PrimitiveType<NUM_RET_TYPE, RET_DIMS>( std::cbrt(x.value) );
 			}
+	template<typename Dims> CUDA_CALLABLE_MEMBER inline INTERNAL_NAMESPACE::PrimitiveType<float, RET_DIMS> cbrtf(INTERNAL_NAMESPACE::PrimitiveType<float, Dims> x) {
+		return INTERNAL_NAMESPACE::PrimitiveType<float, RET_DIMS>(cbrtf(x.value));
+	}
+	template<typename Dims> CUDA_CALLABLE_MEMBER inline INTERNAL_NAMESPACE::PrimitiveType<double, RET_DIMS> cbrt(INTERNAL_NAMESPACE::PrimitiveType<double, Dims> x) {
+		return INTERNAL_NAMESPACE::PrimitiveType<double, RET_DIMS>(cbrt(x.value));
+	}
 	#undef NUM_RET_TYPE
 	#undef RET_DIMS
 
 
 	// typedefing the primitive types
-	/*template<typename Dims = Adimensional> using INT8  = INTERNAL_NAMESPACE::PrimitiveType<std::int8_t , Dims>;
-	template<typename Dims = Adimensional> using INT16 = INTERNAL_NAMESPACE::PrimitiveType<std::int16_t, Dims>;
-	template<typename Dims = Adimensional> using INT32 = INTERNAL_NAMESPACE::PrimitiveType<std::int32_t, Dims>;
-	template<typename Dims = Adimensional> using INT64 = INTERNAL_NAMESPACE::PrimitiveType<std::int64_t, Dims>;
-
-	template<typename Dims = Adimensional> using UINT8  = INTERNAL_NAMESPACE::PrimitiveType<std::uint8_t , Dims>;
-	template<typename Dims = Adimensional> using UINT16 = INTERNAL_NAMESPACE::PrimitiveType<std::uint16_t, Dims>;
-	template<typename Dims = Adimensional> using UINT32 = INTERNAL_NAMESPACE::PrimitiveType<std::uint32_t, Dims>;
-	template<typename Dims = Adimensional> using UINT64 = INTERNAL_NAMESPACE::PrimitiveType<std::uint64_t, Dims>;
-
-	template<typename Dims = Adimensional> using FLOAT32  = INTERNAL_NAMESPACE::PrimitiveType<FLOAT32_T , Dims>;
-	template<typename Dims = Adimensional> using FLOAT64  = INTERNAL_NAMESPACE::PrimitiveType<FLOAT64_T , Dims>;
-	template<typename Dims = Adimensional> using FLOAT128 = INTERNAL_NAMESPACE::PrimitiveType<FLOAT128_T, Dims>;*/
-
 	template<typename Dims = Adimensional> using INT8  = INTERNAL_NAMESPACE::PrimitiveType<char     , Dims>;
 	template<typename Dims = Adimensional> using INT16 = INTERNAL_NAMESPACE::PrimitiveType<short    , Dims>;
 	template<typename Dims = Adimensional> using INT32 = INTERNAL_NAMESPACE::PrimitiveType<int      , Dims>;

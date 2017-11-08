@@ -9,12 +9,12 @@ __global__ void cuda_dims() {
 	float64<> f(2.7);
 	e = f;
 	a + b;
-	/*
-	pow<7>(pow<1, 7>(a));
-	float64<Length>(5) + sqrt(float64<Area>(25));
+		
+	//powf<7>(pow<1, 7>(a));
+	float32<Length>(5) + sqrtf(float32<Area>(25));
 	float64<Length>(5) + cbrt(float64<Volume>(125));
-	*/
-	//float64<Velocity> lightspeed = 1.0 / sqrtf(float64<Permittivity>(8.85418781762039e-12) * float64<Permeability>(1.256637061435917e-6));
+	
+	float64<Velocity> lightspeed = 1.0 / sqrt(float64<Permittivity>(8.85418781762039e-12) * float64<Permeability>(1.256637061435917e-6));
 }
 
 void test_cuda() {

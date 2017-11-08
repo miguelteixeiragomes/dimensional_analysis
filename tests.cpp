@@ -19,6 +19,7 @@ public:
 };
 void adim_func(long long x) {}
 void time_func(int16<Time> x) {}
+void float_func(float32<> x) {}
 
 
 void dimensions() {
@@ -89,6 +90,7 @@ void dimensions() {
 	std::cout << float64<Length>(5) + cbrt(float64<Volume>(125)) << '\n';
 	adim_func(c);
 	time_func(a);
+	float_func(f);
 	float64<Velocity> lightspeed = 1.0 / sqrt(float64<Permittivity>(8.85418781762039e-12)*float64<Permeability>(1.256637061435917e-6));
 	std::cout.precision(15);
 	std::cout << lightspeed << '\n';
