@@ -246,5 +246,10 @@ ModelManifest.xml
 
 # My ignores
 *.exe
+*.lib
+*.exp
+*.db
+*.opendb
+*.pdb
 testing_temp/
 .idea/

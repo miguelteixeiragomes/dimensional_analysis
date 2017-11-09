@@ -9,7 +9,8 @@ This library implements compile time dimensional analysis in C++ through templat
 The library is composed only of header files. To use it, simply include the file 'dimensional_analysis.h'. The compilers tested were
 
 * MS Visual C++ 19.00.24215.1;
-* GCC - 6.3.0/7.2.0
+* GCC - 6.3.0/7.2.0;
+* NVCC - 8.0.60.
 
 However, the library should work with any C++11 compliant compiler.
 
@@ -18,7 +19,6 @@ However, the library should work with any C++11 compliant compiler.
 This library supports a number of compilation options through macro definitions:
 
 * `#define SKIP_DIMENSIONAL_ANALYSIS` - if defined the dimensional analysis is skipped entirely removing any of the library's overhead and speeding the up the compilation;
-* `#define EXPLICIT_CONSTRUCTOR` - if defined the constructor of the library's primitive types is made explicit;
 
 * `#define <TYPE-NAME> <type-name>` - these directives allow changing the names of the library's primitive types:
   - `#define INT8 <name>` - defaults to `int8` and encapsulates the built-in type `std::int8_t`;
@@ -35,7 +35,7 @@ This library supports a number of compilation options through macro definitions:
 
 * `#define FLOAT32_T <name>` - defaults to `float`;
 * `#define FLOAT64_T <name>` - defaults to `double`;
-* `#define FLOAT128_T <name>` - defaults to `long double`;
+* `#define FLOAT128_T <name>` - defaults to `long double`.
 
 
 ## Usage
