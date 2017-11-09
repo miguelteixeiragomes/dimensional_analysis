@@ -3,7 +3,6 @@
 #include <limits>
 #include <vector>
 #include <complex>
-//#define EXPLICIT_CONSTRUCTOR
 //#define SKIP_DIMENSIONAL_ANALYSIS
 #include "dimensional_analysis.h"
 #include "test_cuda.cuh"

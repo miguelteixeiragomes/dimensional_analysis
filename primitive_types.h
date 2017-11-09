@@ -5,12 +5,6 @@
 
 	namespace INTERNAL_NAMESPACE {
 
-		#ifdef EXPLICIT_CONSTRUCTOR
-			#define EXPLICIT explicit
-		#else
-			#define EXPLICIT
-		#endif
-
 		template<typename NumT> struct NumericValue {
 			static const NumT value;
 		};
@@ -77,11 +71,6 @@
 				/*template<typename NumT2> CUDA_CALLABLE_MEMBER inline operator PrimitiveType<NumT2, Dims>() {
 					return PrimitiveType<NumT2, Dims>(this->value);
 				}*/
-
-				#define UNARY_PLUS_MINUS(OPERATOR)\
-					CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype( OPERATOR NumericValue<NumT>::value), Dims> operator OPERATOR () {\
-						return PrimitiveType<decltype( OPERATOR NumericValue<NumT>::value), Dims>( OPERATOR this->value);\
-					}
 			
 				#define	UNARY_INCREMENT_DECREMENT(OPERATOR)\
 					CUDA_CALLABLE_MEMBER inline PrimitiveType<NumT, Dims>& operator OPERATOR () {\
@@ -93,14 +82,18 @@
 						(this->value) OPERATOR;\
 						return temp;\
 					}
-
-
-				UNARY_PLUS_MINUS(+)
-				UNARY_PLUS_MINUS(-)
 			
 				UNARY_INCREMENT_DECREMENT(++)
 				UNARY_INCREMENT_DECREMENT(--)
 		};
+
+		#define UNARY_PLUS_MINUS(OPERATOR)\
+			template<typename T, typename D> CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype( OPERATOR NumericValue<T>::value), D> operator OPERATOR (PrimitiveType<T, D> x) {\
+				return PrimitiveType<decltype( OPERATOR NumericValue<T>::value), D>( OPERATOR x.value);\
+			}
+
+		UNARY_PLUS_MINUS(+)
+		UNARY_PLUS_MINUS(-)
 
 		#ifndef __CUDACC__
 		template<typename NumT, typename Dims> inline std::ostream &operator<<(std::ostream &os, PrimitiveType<NumT, Dims> rhs) {
@@ -124,7 +117,7 @@
 
 		#define SAME_UNITS_COMPOUND_ASSIGNMENT(OPERATOR, ERROR_MESSAGE)\
 			template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
-				inline PrimitiveType<NumT_lhs, Dims> operator OPERATOR (PrimitiveType<NumT_lhs, Dims>& lhs, PrimitiveType<NumT_rhs, Dims> rhs){\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<NumT_lhs, Dims> operator OPERATOR (PrimitiveType<NumT_lhs, Dims>& lhs, PrimitiveType<NumT_rhs, Dims> rhs){\
 					lhs.value OPERATOR rhs.value;\
 					return lhs;\
 				}/*\
@@ -136,7 +129,7 @@
 
 		#define MUL_DIV_COMPOUND_ASSIGNMENT(OPERATOR, ERROR_MESSAGE)\
 			template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
-				inline PrimitiveType<NumT_lhs, Dims> operator OPERATOR (PrimitiveType<NumT_lhs, Dims>& lhs, PrimitiveType<NumT_rhs, Adimensional> rhs){\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<NumT_lhs, Dims> operator OPERATOR (PrimitiveType<NumT_lhs, Dims>& lhs, PrimitiveType<NumT_rhs, Adimensional> rhs){\
 					lhs.value OPERATOR rhs.value;\
 					return lhs;\
 				}/*\
@@ -148,7 +141,7 @@
 
 		#define COMPARATOR(OPERATOR, ERROR_MESSAGE)\
 			template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
-				inline bool operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, PrimitiveType<NumT_rhs, Dims> rhs) {\
+				CUDA_CALLABLE_MEMBER inline bool operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, PrimitiveType<NumT_rhs, Dims> rhs) {\
 						return lhs.value OPERATOR rhs.value;\
 					}/*\
 			\
@@ -166,7 +159,7 @@
 
 		#define BITWISE_BINARY_OPERATOR(OPERATOR, ERROR_MESSAGE)\
 			template<typename NumT_lhs, typename NumT_rhs/*, typename Constraint = typename std::enable_if<std::is_integral<NumT_lhs>::value & std::is_integral<NumT_rhs>::value, void>::type*/>\
-				inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional> lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
 						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs.value OPERATOR rhs.value);\
 					}/*\
@@ -178,7 +171,7 @@
 	
 		#define BITWISE_COMPOUND_ASSIGNMENT(OPERATOR, ERROR_MESSAGE)\
 			template<typename NumT_lhs, typename NumT_rhs/*, typename Constraint = typename std::enable_if<std::is_integral<NumT_lhs>::value & std::is_integral<NumT_rhs>::value, void>::type*/>\
-				inline PrimitiveType<NumT_lhs, Adimensional>\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<NumT_lhs, Adimensional>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional>& lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
 						return PrimitiveType<NumT_lhs, Adimensional>(lhs.value OPERATOR rhs.value);\
 					}/*\
@@ -224,13 +217,13 @@
 		// Operator overloads between the library's adimensional primitive types and C++ primitive types (including 'bool')
 		#define SAME_UNITS_OPERATOR_WITH_C_PRIM(OPERATOR, ERROR_MESSAGE)\
 			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_lhs>::value, void>::type>\
-				inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
 						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs OPERATOR rhs.value);\
 					}\
 			\
 			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_rhs>::value, void>::type>\
-				inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional> lhs, NumT_rhs rhs) {\
 						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs.value OPERATOR rhs);\
 					}/*\
@@ -250,19 +243,19 @@
 						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC<Adimensional, Dims>::result>(lhs OPERATOR rhs.value);\
 					}\
 			template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
-				inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC<Dims, Adimensional>::result>\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC<Dims, Adimensional>::result>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, NumT_rhs rhs) {\
 						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC<Dims, Adimensional>::result>(lhs.value OPERATOR rhs);\
 					}
 
 		#define COMPARATOR_C_PRIM(OPERATOR, ERROR_MESSAGE)\
 			template<typename NumT_lhs, typename NumT_rhs>\
-				inline bool operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
+				CUDA_CALLABLE_MEMBER inline bool operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
 						return lhs OPERATOR rhs.value;\
 					}\
 			\
 			template<typename NumT_lhs, typename NumT_rhs>\
-				inline bool operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional> lhs, NumT_rhs rhs) {\
+				CUDA_CALLABLE_MEMBER inline bool operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional> lhs, NumT_rhs rhs) {\
 						return lhs.value OPERATOR rhs;\
 					}/*\
 			\
@@ -276,13 +269,13 @@
 
 		#define BITWISE_BINARY_OPERATOR_C_PRIM(OPERATOR, ERROR_MESSAGE)\
 			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_integral<NumT_lhs>::value & std::is_integral<NumT_rhs>::value, void>::type>\
-				inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
 						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs OPERATOR rhs.value);\
 					}\
 			\
 			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_integral<NumT_lhs>::value & std::is_integral<NumT_rhs>::value, void>::type>\
-				inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional> lhs, NumT_rhs rhs) {\
 						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs.value OPERATOR rhs);\
 					}/*\
@@ -317,18 +310,18 @@
 		
 		
 	
-		template<typename NumT> struct Bitwise_negation_is_only_available_for_integers_and_not;
-		Bitwise_negation_is_only_available_for_integers_and_not<FLOAT32_T> operator~(PrimitiveType<FLOAT32_T, Adimensional> x);
-		Bitwise_negation_is_only_available_for_integers_and_not<FLOAT64_T> operator~(PrimitiveType<FLOAT64_T, Adimensional> x);
-		template<typename NumT> PrimitiveType<NumT, Adimensional> operator~(PrimitiveType<NumT, Adimensional> x) {
+		//template<typename NumT> struct Bitwise_negation_is_only_available_for_integers_and_not;
+		//Bitwise_negation_is_only_available_for_integers_and_not<FLOAT32_T> operator~(PrimitiveType<FLOAT32_T, Adimensional> x);
+		//Bitwise_negation_is_only_available_for_integers_and_not<FLOAT64_T> operator~(PrimitiveType<FLOAT64_T, Adimensional> x);
+		template<typename NumT> CUDA_CALLABLE_MEMBER inline PrimitiveType<NumT, Adimensional> operator~(PrimitiveType<NumT, Adimensional> x) {
 			return PrimitiveType<NumT, Adimensional>(~x.value);
 		}
-		template<typename NumT, typename Dims> struct Bitwise_negation_is_only_available_for_adimensional_quantities_and_not;
-		template<typename NumT, typename Dims> Bitwise_negation_is_only_available_for_adimensional_quantities_and_not<NumT, Dims> operator~(PrimitiveType<NumT, Dims> x);
+		//template<typename NumT, typename Dims> struct Bitwise_negation_is_only_available_for_adimensional_quantities_and_not;
+		//template<typename NumT, typename Dims> Bitwise_negation_is_only_available_for_adimensional_quantities_and_not<NumT, Dims> operator~(PrimitiveType<NumT, Dims> x);
 	
 
 		template<typename NumT_lhs, typename NumT_rhs, typename DimsLhs, typename DimsRhs>
-			inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value % NumericValue<NumT_rhs>::value), DimsLhs>
+			CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value % NumericValue<NumT_rhs>::value), DimsLhs>
 				operator%(PrimitiveType<NumT_lhs, DimsLhs> lhs, PrimitiveType<NumT_rhs, DimsRhs> rhs) {
 					return PrimitiveType<decltype(NumericValue<NumT_lhs>::value % NumericValue<NumT_rhs>::value), DimsLhs>(lhs.value % rhs.value);
 		}
@@ -338,21 +331,21 @@
 	// cmath adapted functions
 	#define NUM_RET_TYPE typename std::conditional<std::is_floating_point<NumT>::value, NumT, double>::type
 	#define RET_DIMS typename INTERNAL_NAMESPACE::__MUL_DIMENSIONS_BY_SCALAR__<std::ratio<exp_num, exp_den>, Dims>::result
-	template<long long exp_num, long long exp_den = 1, typename NumT, typename Dims>
+	template<INT64_T exp_num, INT64_T exp_den = 1, typename NumT, typename Dims>
 		CUDA_CALLABLE_MEMBER inline INTERNAL_NAMESPACE::PrimitiveType<NUM_RET_TYPE, RET_DIMS>
 			pow(INTERNAL_NAMESPACE::PrimitiveType<NumT, Dims> x) {
 				return 
 					INTERNAL_NAMESPACE::PrimitiveType<NUM_RET_TYPE, RET_DIMS>(
 						std::pow(x.value, NUM_RET_TYPE(exp_num) / NUM_RET_TYPE(exp_den)));
 			}
-	/*template<long long exp_num, long long exp_den = 1, typename NumT, typename Dims>
+	/*template<INT64_T exp_num, INT64_T exp_den = 1, typename NumT, typename Dims>
 		CUDA_CALLABLE_MEMBER inline INTERNAL_NAMESPACE::PrimitiveType<float, RET_DIMS>
 			powf(INTERNAL_NAMESPACE::PrimitiveType<float, Dims> x) {
 				return 
 					INTERNAL_NAMESPACE::PrimitiveType<float, RET_DIMS>(
 						powf(x.value, float(exp_num) / float(exp_den)));
 			}
-	template<long long exp_num, long long exp_den = 1, typename NumT, typename Dims>
+	template<INT64_T exp_num, INT64_T exp_den = 1, typename NumT, typename Dims>
 		CUDA_CALLABLE_MEMBER inline INTERNAL_NAMESPACE::PrimitiveType<double, RET_DIMS>
 			pow(INTERNAL_NAMESPACE::PrimitiveType<double, Dims> x) {
 				return 
@@ -396,15 +389,16 @@
 
 
 	// typedefing the primitive types
-	template<typename Dims = Adimensional> using INT8  = INTERNAL_NAMESPACE::PrimitiveType<char     , Dims>;
-	template<typename Dims = Adimensional> using INT16 = INTERNAL_NAMESPACE::PrimitiveType<short    , Dims>;
-	template<typename Dims = Adimensional> using INT32 = INTERNAL_NAMESPACE::PrimitiveType<int      , Dims>;
-	template<typename Dims = Adimensional> using INT64 = INTERNAL_NAMESPACE::PrimitiveType<long long, Dims>;
+	
+	template<typename Dims = Adimensional> using INT8  = INTERNAL_NAMESPACE::PrimitiveType<INT8_T , Dims>;
+	template<typename Dims = Adimensional> using INT16 = INTERNAL_NAMESPACE::PrimitiveType<INT16_T, Dims>;
+	template<typename Dims = Adimensional> using INT32 = INTERNAL_NAMESPACE::PrimitiveType<INT32_T, Dims>;
+	template<typename Dims = Adimensional> using INT64 = INTERNAL_NAMESPACE::PrimitiveType<INT64_T, Dims>;
 
-	template<typename Dims = Adimensional> using UINT8  = INTERNAL_NAMESPACE::PrimitiveType<unsigned char     , Dims>;
-	template<typename Dims = Adimensional> using UINT16 = INTERNAL_NAMESPACE::PrimitiveType<unsigned short    , Dims>;
-	template<typename Dims = Adimensional> using UINT32 = INTERNAL_NAMESPACE::PrimitiveType<unsigned int      , Dims>;
-	template<typename Dims = Adimensional> using UINT64 = INTERNAL_NAMESPACE::PrimitiveType<unsigned long long, Dims>;
+	template<typename Dims = Adimensional> using UINT8  = INTERNAL_NAMESPACE::PrimitiveType<UINT8_T , Dims>;
+	template<typename Dims = Adimensional> using UINT16 = INTERNAL_NAMESPACE::PrimitiveType<UINT16_T, Dims>;
+	template<typename Dims = Adimensional> using UINT32 = INTERNAL_NAMESPACE::PrimitiveType<UINT32_T, Dims>;
+	template<typename Dims = Adimensional> using UINT64 = INTERNAL_NAMESPACE::PrimitiveType<UINT64_T, Dims>;
 
 	template<typename Dims = Adimensional> using FLOAT32  = INTERNAL_NAMESPACE::PrimitiveType<FLOAT32_T , Dims>;
 	template<typename Dims = Adimensional> using FLOAT64  = INTERNAL_NAMESPACE::PrimitiveType<FLOAT64_T , Dims>;
@@ -425,44 +419,33 @@
 	#undef MUL_OR_DIV_C_PRIM
 	#undef COMPARATOR_C_PRIM
 	#undef BITWISE_BINARY_OPERATOR_C_PRIM
-	#undef EXPLICIT
 
 	#define get_value(X) (X.value)
 
 
 	// generic dimensioned place-holder
 	template<typename T, typename D = Adimensional> using Quantity = INTERNAL_NAMESPACE::PrimitiveType<T, D>;
-	/*template<typename T, typename D = Adimensional> class QuantAlt : public T {
-		using T::T;
-
-		public:
-			template<typename D2> inline Bitch_ass_nigga operator+=(QuantAlt<T, D2> rhs);
-			template<typename D2> inline Bitch_ass_nigga operator-=(QuantAlt<T, D2> rhs);
-			template<typename D2> inline QuantAlt<T, typename INTERNAL_NAMESPACE::__ADD_DIMENSIONS__<D, D2>::result> operator*(QuantAlt<T, D2> rhs) {
-				return QuantAlt<T, typename INTERNAL_NAMESPACE::__ADD_DIMENSIONS__<D, D2>::result>(T::operator*(*this, rhs));
-			}
-	};*/
 
 #else
 
-	template<typename Dims = Adimensional> using INT8  = std::int8_t;
-	template<typename Dims = Adimensional> using INT16 = std::int16_t;
-	template<typename Dims = Adimensional> using INT32 = std::int32_t;
-	template<typename Dims = Adimensional> using INT64 = std::int64_t;
+	template<typename Dims = Adimensional> using INT8  = INT8_T;
+	template<typename Dims = Adimensional> using INT16 = INT16_T;
+	template<typename Dims = Adimensional> using INT32 = INT32_T;
+	template<typename Dims = Adimensional> using INT64 = INT64_T;
 
-	template<typename Dims = Adimensional> using UINT8  = std::uint8_t;
-	template<typename Dims = Adimensional> using UINT16 = std::uint16_t;
-	template<typename Dims = Adimensional> using UINT32 = std::uint32_t;
-	template<typename Dims = Adimensional> using UINT64 = std::uint64_t;
+	template<typename Dims = Adimensional> using UINT8  = UINT8_T;
+	template<typename Dims = Adimensional> using UINT16 = UINT16_T;
+	template<typename Dims = Adimensional> using UINT32 = UINT32_T;
+	template<typename Dims = Adimensional> using UINT64 = UINT64_T;
 
-	template<typename Dims = Adimensional> using FLOAT32  = FLOAT32_T;
-	template<typename Dims = Adimensional> using FLOAT64  = FLOAT64_T;
+	template<typename Dims = Adimensional> using FLOAT32  = FLOAT32_T ;
+	template<typename Dims = Adimensional> using FLOAT64  = FLOAT64_T ;
 	template<typename Dims = Adimensional> using FLOAT128 = FLOAT128_T;
 
 
 	#define NUM_RET_TYPE typename std::conditional<std::is_floating_point<NumT>::value, NumT, double>::type
-	template<std::int64_t exp_num, std::int64_t exp_den = 1, typename NumT> 
-		inline NUM_RET_TYPE pow(NumT base) {
+	template<INT64_T exp_num, INT64_T exp_den = 1, typename NumT>
+		CUDA_CALLABLE_MEMBER inline NUM_RET_TYPE pow(NumT base) {
 			return std::pow(base, NUM_RET_TYPE(exp_num) / NUM_RET_TYPE(exp_den));
 		}
 	#undef NUM_RET_TYPE

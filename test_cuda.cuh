@@ -2,6 +2,7 @@
 #include "cuda_runtime.h"
 #include "cuda_runtime_api.h"
 #include <cuda.h>
+#define SKIP_DIMENSIONAL_ANALYSIS
 #include "dimensional_analysis.h"
 
 
