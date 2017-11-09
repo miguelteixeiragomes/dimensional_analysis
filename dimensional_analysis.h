@@ -3,7 +3,7 @@
 #include <ratio>
 
 
-#define INTERNAL_NAMESPACE dimensional_analysis_viscera
+#define INTERNAL_NAMESPACE dim//ensional_analysis_viscera
 
 #ifndef INT8
 	#define INT8  int8
@@ -112,9 +112,46 @@
 #endif
 
 ////////////////////////////////////////////////////////
+namespace INTERNAL_NAMESPACE { template<typename NumT, typename Dims> class PrimitiveType; }
 #include "dimensions.h"
 #include "primitive_types.h"
 ////////////////////////////////////////////////////////
+
+#define DIMENSION_DEFINITION_AND_LITERALS(NAME, LENGTH_EXP, TIME_EXP, MASS_EXP, CHARGE_EXP, TEMPERATURE_EXP)\
+	typedef Dimensions< std::ratio<LENGTH_EXP>, std::ratio<TIME_EXP>, std::ratio<MASS_EXP>, std::ratio<CHARGE_EXP>, std::ratio<TEMPERATURE_EXP> > NAME;\
+	CUDA_CALLABLE_MEMBER inline INT8    <NAME> operator "" _s8_   ## NAME(unsigned long long x) { return INT8    <NAME>(x); }\
+	CUDA_CALLABLE_MEMBER inline INT16   <NAME> operator "" _s16_  ## NAME(unsigned long long x) { return INT16   <NAME>(x); }\
+	CUDA_CALLABLE_MEMBER inline INT32   <NAME> operator "" _      ## NAME(unsigned long long x) { return INT32   <NAME>(x); }\
+	CUDA_CALLABLE_MEMBER inline INT32   <NAME> operator "" _s32_  ## NAME(unsigned long long x) { return INT32   <NAME>(x); }\
+	CUDA_CALLABLE_MEMBER inline INT64   <NAME> operator "" _s64_  ## NAME(unsigned long long x) { return INT64   <NAME>(x); }\
+	CUDA_CALLABLE_MEMBER inline UINT8   <NAME> operator "" _u8_   ## NAME(unsigned long long x) { return UINT8   <NAME>(x); }\
+	CUDA_CALLABLE_MEMBER inline UINT16  <NAME> operator "" _u16_  ## NAME(unsigned long long x) { return UINT16  <NAME>(x); }\
+	CUDA_CALLABLE_MEMBER inline UINT32  <NAME> operator "" _u32_  ## NAME(unsigned long long x) { return UINT32  <NAME>(x); }\
+	CUDA_CALLABLE_MEMBER inline UINT64  <NAME> operator "" _u64_  ## NAME(unsigned long long x) { return UINT64  <NAME>(x); }\
+	CUDA_CALLABLE_MEMBER inline FLOAT32 <NAME> operator "" _f32_  ## NAME(long double        x) { return FLOAT32 <NAME>(x); }\
+	CUDA_CALLABLE_MEMBER inline FLOAT64 <NAME> operator "" _      ## NAME(long double        x) { return FLOAT64 <NAME>(x); }\
+	CUDA_CALLABLE_MEMBER inline FLOAT64 <NAME> operator "" _f64_  ## NAME(long double        x) { return FLOAT64 <NAME>(x); }\
+	CUDA_CALLABLE_MEMBER inline FLOAT128<NAME> operator "" _f128_ ## NAME(long double        x) { return FLOAT128<NAME>(x); }
+
+DIMENSION_DEFINITION_AND_LITERALS(Length                   ,  1,  0,  0,  0,  0)
+DIMENSION_DEFINITION_AND_LITERALS(Area                     ,  2,  0,  0,  0,  0)
+DIMENSION_DEFINITION_AND_LITERALS(Volume                   ,  3,  0,  0,  0,  0)
+DIMENSION_DEFINITION_AND_LITERALS(Time                     ,  0,  1,  0,  0,  0)
+DIMENSION_DEFINITION_AND_LITERALS(Frequency                ,  0, -1,  0,  0,  0)
+DIMENSION_DEFINITION_AND_LITERALS(Mass                     ,  0,  0,  1,  0,  0)
+DIMENSION_DEFINITION_AND_LITERALS(Charge                   ,  0,  0,  0,  1,  0)
+DIMENSION_DEFINITION_AND_LITERALS(Temperature              ,  0,  0,  0,  1,  0)
+DIMENSION_DEFINITION_AND_LITERALS(Current                  ,  0, -1,  0,  1,  0)
+DIMENSION_DEFINITION_AND_LITERALS(Velocity                 ,  1, -1,  0,  0,  0)
+DIMENSION_DEFINITION_AND_LITERALS(Acceleration             ,  1, -2,  0,  0,  0)
+DIMENSION_DEFINITION_AND_LITERALS(Force                    ,  1, -2,  1,  0,  0)
+DIMENSION_DEFINITION_AND_LITERALS(ElectricField            ,  1, -2,  1, -1,  0)
+DIMENSION_DEFINITION_AND_LITERALS(ElectricDisplacementField, -2,  0,  0,  1,  0)
+DIMENSION_DEFINITION_AND_LITERALS(Capacitance              , -2,  2, -1,  2,  0)
+DIMENSION_DEFINITION_AND_LITERALS(Permittivity             , -3,  2, -1,  2,  0)
+DIMENSION_DEFINITION_AND_LITERALS(Inductance               ,  2,  0,  1,  2,  0)
+DIMENSION_DEFINITION_AND_LITERALS(Permeability             ,  1,  0,  1, -2,  0)
+
 
 
 #ifdef SKIP_DIMENSIONAL_ANALYSIS

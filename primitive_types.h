@@ -9,7 +9,7 @@
 			static const NumT value;
 		};
 
-		template<typename NumT, typename Dims> class PrimitiveType;
+		//template<typename NumT, typename Dims> class PrimitiveType;
 
 		template<typename NumT, typename Dims> class PrimitiveTypeBase {
 			public:

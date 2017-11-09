@@ -9,6 +9,7 @@ __global__ void cuda_dims() {
 	float64<> f(2.7);
 	e = f;
 	a + b;
+	float64<Length>(8.0) + 7.0_Length;
 
 	{
 		+a;

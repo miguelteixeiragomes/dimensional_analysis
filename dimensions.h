@@ -14,26 +14,7 @@ template<typename length,
 		typedef temperature TEMPERATURE;
 	};
 
-
 typedef Dimensions< std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Adimensional;
-typedef Dimensions< std::ratio< 1>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Length;
-typedef Dimensions< std::ratio< 2>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Area;
-typedef Dimensions< std::ratio< 3>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Volume;
-typedef Dimensions< std::ratio< 0>, std::ratio< 1>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Time;
-typedef Dimensions< std::ratio< 0>, std::ratio<-1>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Frequency;
-typedef Dimensions< std::ratio< 0>, std::ratio< 0>, std::ratio< 1>, std::ratio< 0>, std::ratio< 0> > Mass;
-typedef Dimensions< std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 1>, std::ratio< 0> > Charge;
-typedef Dimensions< std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 1>, std::ratio< 0> > Temperature;
-typedef Dimensions< std::ratio< 0>, std::ratio<-1>, std::ratio< 0>, std::ratio< 1>, std::ratio< 0> > Current;
-typedef Dimensions< std::ratio< 1>, std::ratio<-1>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Velocity;
-typedef Dimensions< std::ratio< 1>, std::ratio<-2>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Acceleration;
-typedef Dimensions< std::ratio< 1>, std::ratio<-2>, std::ratio< 1>, std::ratio< 0>, std::ratio< 0> > Force;
-typedef Dimensions< std::ratio< 1>, std::ratio<-2>, std::ratio< 1>, std::ratio<-1>, std::ratio< 0> > ElectricField;
-typedef Dimensions< std::ratio<-2>, std::ratio< 0>, std::ratio< 0>, std::ratio< 1>, std::ratio< 0> > ElectricDisplacementField;
-typedef Dimensions< std::ratio<-2>, std::ratio< 2>, std::ratio<-1>, std::ratio< 2>, std::ratio< 0> > Capacitance;
-typedef Dimensions< std::ratio<-3>, std::ratio< 2>, std::ratio<-1>, std::ratio< 2>, std::ratio< 0> > Permittivity;
-typedef Dimensions< std::ratio< 2>, std::ratio< 0>, std::ratio< 1>, std::ratio< 2>, std::ratio< 0> > Inductance;
-typedef Dimensions< std::ratio< 1>, std::ratio< 0>, std::ratio< 1>, std::ratio<-2>, std::ratio< 0> > Permeability;
 
 
 namespace INTERNAL_NAMESPACE {
