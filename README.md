@@ -1,6 +1,6 @@
 # Dimensional Analysis Library
 
-This library implements compile time dimensional analysis in C++ through template meta-programming. The library defines template classes matching C++'s arithmetic built-in types whose template argument is the dimensions.
+This is a header-only library that implements compile time dimensional analysis in C++ through template meta-programming. The library defines template classes matching C++'s arithmetic built-in types whose template argument is the dimensions.
 
 ## Getting started
 
