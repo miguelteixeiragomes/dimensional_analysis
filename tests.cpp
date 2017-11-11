@@ -5,7 +5,7 @@
 #include <complex>
 //#define SKIP_DIMENSIONAL_ANALYSIS
 #include "dimensional_analysis.h"
-//#include "test_cuda.cuh"
+#include "test_cuda.cuh"
 
 
 class CLASS {
@@ -117,6 +117,6 @@ void dimensions() {
 
 int main(int argc, char* argv[]) {
 	dimensions();
-	//test_cuda();
+	test_cuda();
 	return 0;
 }

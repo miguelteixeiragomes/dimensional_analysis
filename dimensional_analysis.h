@@ -133,14 +133,15 @@ namespace INTERNAL_NAMESPACE { template<typename NumT, typename Dims> class Prim
 	CUDA_CALLABLE_MEMBER inline FLOAT64 <NAME> operator "" _f64_  ## NAME(long double        x) { return FLOAT64 <NAME>(x); }\
 	CUDA_CALLABLE_MEMBER inline FLOAT128<NAME> operator "" _f128_ ## NAME(long double        x) { return FLOAT128<NAME>(x); }
 
-DIMENSION_DEFINITION_AND_LITERALS(Length                   ,  1,  0,  0,  0,  0)
+DIMENSION_DEFINITION_AND_LITERALS(SpatialFrequency         , -1,  0,  0,  0,  0)
+DIMENSION_DEFINITION_AND_LITERALS(Length                   ,  1,  0,  0,  0,  0) // fundamental
 DIMENSION_DEFINITION_AND_LITERALS(Area                     ,  2,  0,  0,  0,  0)
 DIMENSION_DEFINITION_AND_LITERALS(Volume                   ,  3,  0,  0,  0,  0)
-DIMENSION_DEFINITION_AND_LITERALS(Time                     ,  0,  1,  0,  0,  0)
 DIMENSION_DEFINITION_AND_LITERALS(Frequency                ,  0, -1,  0,  0,  0)
-DIMENSION_DEFINITION_AND_LITERALS(Mass                     ,  0,  0,  1,  0,  0)
-DIMENSION_DEFINITION_AND_LITERALS(Charge                   ,  0,  0,  0,  1,  0)
-DIMENSION_DEFINITION_AND_LITERALS(Temperature              ,  0,  0,  0,  1,  0)
+DIMENSION_DEFINITION_AND_LITERALS(Time                     ,  0,  1,  0,  0,  0) // fundamental
+DIMENSION_DEFINITION_AND_LITERALS(Mass                     ,  0,  0,  1,  0,  0) // fundamental
+DIMENSION_DEFINITION_AND_LITERALS(Charge                   ,  0,  0,  0,  1,  0) // fundamental
+DIMENSION_DEFINITION_AND_LITERALS(Temperature              ,  0,  0,  0,  1,  0) // fundamental
 DIMENSION_DEFINITION_AND_LITERALS(Current                  ,  0, -1,  0,  1,  0)
 DIMENSION_DEFINITION_AND_LITERALS(Velocity                 ,  1, -1,  0,  0,  0)
 DIMENSION_DEFINITION_AND_LITERALS(Acceleration             ,  1, -2,  0,  0,  0)
