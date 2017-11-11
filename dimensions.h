@@ -14,7 +14,7 @@ template<typename length,
 		typedef temperature TEMPERATURE;
 	};
 
-typedef Dimensions< std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Adimensional;
+typedef Dimensions< std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0> > Adimensional;
 
 
 namespace INTERNAL_NAMESPACE {
