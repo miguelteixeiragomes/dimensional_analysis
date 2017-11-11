@@ -17,6 +17,7 @@ template<typename length,
 typedef Dimensions< std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0> > Adimensional;
 
 
+
 namespace INTERNAL_NAMESPACE {
 
 	#define DIMENSION_OPERATOR(OPERATION_NAME, FRACTION_FUNCTION)\
@@ -33,12 +34,21 @@ namespace INTERNAL_NAMESPACE {
 	#undef DIMENSION_OPERATOR
 
 
-	template<typename scalar_ratio, typename DimsRhs> struct __MUL_DIMENSIONS_BY_SCALAR__ {\
-		typedef Dimensions<std::ratio_multiply<scalar_ratio, typename DimsRhs::LENGTH     >,\
-						   std::ratio_multiply<scalar_ratio, typename DimsRhs::TIME       >,\
-						   std::ratio_multiply<scalar_ratio, typename DimsRhs::MASS       >,\
-						   std::ratio_multiply<scalar_ratio, typename DimsRhs::CHARGE     >,\
-						   std::ratio_multiply<scalar_ratio, typename DimsRhs::TEMPERATURE> > result;\
+	template<typename scalar_ratio, typename DimsRhs> struct __MUL_DIMENSIONS_BY_SCALAR__ {
+		typedef Dimensions<std::ratio_multiply<scalar_ratio, typename DimsRhs::LENGTH     >,
+						   std::ratio_multiply<scalar_ratio, typename DimsRhs::TIME       >,
+						   std::ratio_multiply<scalar_ratio, typename DimsRhs::MASS       >,
+						   std::ratio_multiply<scalar_ratio, typename DimsRhs::CHARGE     >,
+						   std::ratio_multiply<scalar_ratio, typename DimsRhs::TEMPERATURE> > result;
 	};
 
 }
+
+
+template<typename D0, typename ... Dn> struct MUL_DIMS {
+	using value = typename INTERNAL_NAMESPACE::__ADD_DIMENSIONS__<D0, typename MUL_DIMS<Dn...>::value>::result;
+};
+
+template<typename D0> struct MUL_DIMS<D0> {
+	using value = D0;
+};

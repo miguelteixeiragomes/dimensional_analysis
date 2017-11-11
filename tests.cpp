@@ -106,10 +106,13 @@ void dimensions() {
 	std::cout.precision(15);
 	std::cout << lightspeed << '\n';
 
-	/*Quantity<std::complex<double>, Adimensional> comp1(1, 2);
+	Quantity<std::complex<double>, Adimensional> comp1(1, 2);
 	Quantity<std::complex<double>, Adimensional> comp2(1, 2);
 	std::complex<double> comp3(2, 1);
-	std::cout << (comp1 + comp2) << '\n';*/
+	std::cout << (comp1 + comp2) << '\n';
+
+
+	float32<Volume>(25) + float32<MUL_DIMS<Length, Length, Length>::value>(7);
 }
 
 int main(int argc, char* argv[]) {
