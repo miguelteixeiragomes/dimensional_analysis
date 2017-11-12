@@ -2,49 +2,34 @@
 
 
 template<typename length, 
-		 typename time, 
-		 typename mass, 
-		 typename charge,
-		 typename temperature> 
+         typename time, 
+         typename mass, 
+         typename charge,
+         typename temperature,
+         INT64_T  orientation = 0> 
 	struct Dimensions {
-		typedef length      LENGTH;
-		typedef time        TIME;
-		typedef mass        MASS;
-		typedef charge      CHARGE;
-		typedef temperature TEMPERATURE;
+		using                LENGTH      = length;
+		using                TIME        = time;
+		using                MASS        = mass;
+		using                CHARGE      = charge;
+		using                TEMPERATURE = temperature;
+		static const INT64_T ORIENTATION = orientation;
 	};
 
+using Adimensional = Dimensions< std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0> >;
 
-typedef Dimensions< std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Adimensional;
-typedef Dimensions< std::ratio< 1>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Length;
-typedef Dimensions< std::ratio< 2>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Area;
-typedef Dimensions< std::ratio< 3>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Volume;
-typedef Dimensions< std::ratio< 0>, std::ratio< 1>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Time;
-typedef Dimensions< std::ratio< 0>, std::ratio<-1>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Frequency;
-typedef Dimensions< std::ratio< 0>, std::ratio< 0>, std::ratio< 1>, std::ratio< 0>, std::ratio< 0> > Mass;
-typedef Dimensions< std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 1>, std::ratio< 0> > Charge;
-typedef Dimensions< std::ratio< 0>, std::ratio< 0>, std::ratio< 0>, std::ratio< 1>, std::ratio< 0> > Temperature;
-typedef Dimensions< std::ratio< 0>, std::ratio<-1>, std::ratio< 0>, std::ratio< 1>, std::ratio< 0> > Current;
-typedef Dimensions< std::ratio< 1>, std::ratio<-1>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Velocity;
-typedef Dimensions< std::ratio< 1>, std::ratio<-2>, std::ratio< 0>, std::ratio< 0>, std::ratio< 0> > Acceleration;
-typedef Dimensions< std::ratio< 1>, std::ratio<-2>, std::ratio< 1>, std::ratio< 0>, std::ratio< 0> > Force;
-typedef Dimensions< std::ratio< 1>, std::ratio<-2>, std::ratio< 1>, std::ratio<-1>, std::ratio< 0> > ElectricField;
-typedef Dimensions< std::ratio<-2>, std::ratio< 0>, std::ratio< 0>, std::ratio< 1>, std::ratio< 0> > ElectricDisplacementField;
-typedef Dimensions< std::ratio<-2>, std::ratio< 2>, std::ratio<-1>, std::ratio< 2>, std::ratio< 0> > Capacitance;
-typedef Dimensions< std::ratio<-3>, std::ratio< 2>, std::ratio<-1>, std::ratio< 2>, std::ratio< 0> > Permittivity;
-typedef Dimensions< std::ratio< 2>, std::ratio< 0>, std::ratio< 1>, std::ratio< 2>, std::ratio< 0> > Inductance;
-typedef Dimensions< std::ratio< 1>, std::ratio< 0>, std::ratio< 1>, std::ratio<-2>, std::ratio< 0> > Permeability;
 
 
 namespace INTERNAL_NAMESPACE {
 
 	#define DIMENSION_OPERATOR(OPERATION_NAME, FRACTION_FUNCTION)\
 		template<typename DimsLhs, typename DimsRhs> struct OPERATION_NAME {\
-			typedef Dimensions<FRACTION_FUNCTION<typename DimsLhs::LENGTH     , typename DimsRhs::LENGTH     >,\
-							   FRACTION_FUNCTION<typename DimsLhs::TIME       , typename DimsRhs::TIME       >,\
-							   FRACTION_FUNCTION<typename DimsLhs::MASS       , typename DimsRhs::MASS       >,\
-							   FRACTION_FUNCTION<typename DimsLhs::CHARGE     , typename DimsRhs::CHARGE     >,\
-							   FRACTION_FUNCTION<typename DimsLhs::TEMPERATURE, typename DimsRhs::TEMPERATURE> > result;\
+			using result = Dimensions<FRACTION_FUNCTION<typename DimsLhs::LENGTH     , typename DimsRhs::LENGTH     >,\
+			                          FRACTION_FUNCTION<typename DimsLhs::TIME       , typename DimsRhs::TIME       >,\
+			                          FRACTION_FUNCTION<typename DimsLhs::MASS       , typename DimsRhs::MASS       >,\
+			                          FRACTION_FUNCTION<typename DimsLhs::CHARGE     , typename DimsRhs::CHARGE     >,\
+			                          FRACTION_FUNCTION<typename DimsLhs::TEMPERATURE, typename DimsRhs::TEMPERATURE>,\
+			                          DimsLhs::ORIENTATION                           ^          DimsRhs::ORIENTATION    >;\
 		};
 
 	DIMENSION_OPERATOR(__ADD_DIMENSIONS__, std::ratio_add)
@@ -52,12 +37,26 @@ namespace INTERNAL_NAMESPACE {
 	#undef DIMENSION_OPERATOR
 
 
-	template<typename scalar_ratio, typename DimsRhs> struct __MUL_DIMENSIONS_BY_SCALAR__ {\
-		typedef Dimensions<std::ratio_multiply<scalar_ratio, typename DimsRhs::LENGTH     >,\
-						   std::ratio_multiply<scalar_ratio, typename DimsRhs::TIME       >,\
-						   std::ratio_multiply<scalar_ratio, typename DimsRhs::MASS       >,\
-						   std::ratio_multiply<scalar_ratio, typename DimsRhs::CHARGE     >,\
-						   std::ratio_multiply<scalar_ratio, typename DimsRhs::TEMPERATURE> > result;\
+	template<typename scalar_ratio, typename Dims> struct __MUL_DIMENSIONS_BY_SCALAR__ {
+		using result = Dimensions<std::ratio_multiply<scalar_ratio, typename Dims::LENGTH     >,
+		                          std::ratio_multiply<scalar_ratio, typename Dims::TIME       >,
+		                          std::ratio_multiply<scalar_ratio, typename Dims::MASS       >,
+		                          std::ratio_multiply<scalar_ratio, typename Dims::CHARGE     >,
+		                          std::ratio_multiply<scalar_ratio, typename Dims::TEMPERATURE>,
+		                          (scalar_ratio::num % 2) * (scalar_ratio::den % 2) * Dims::ORIENTATION >;
 	};
 
 }
+
+
+template<typename D0, typename ... Dn> struct MUL_DIMS {
+	using value = typename INTERNAL_NAMESPACE::__ADD_DIMENSIONS__<D0, typename MUL_DIMS<Dn...>::value>::result;
+};
+
+template<typename D0> struct MUL_DIMS<D0> {
+	using value = D0;
+};
+
+template<typename D, INT64_T exponent> struct DIMS_POW {
+	using value = typename INTERNAL_NAMESPACE::__MUL_DIMENSIONS_BY_SCALAR__<std::ratio<exponent>, D>::result;
+};
