@@ -91,7 +91,7 @@ The missing `<dim-name>` can be from the following list of dimensions:
 * `Area`;              
 * `Capacitance`;
 * `Charge`;
-* `Curren`;
+* `Current`;
 * `ElectricDisplacementField`;
 * `ElectricField`;
 * `Energy`;
