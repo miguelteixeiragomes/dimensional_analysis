@@ -109,7 +109,7 @@ void dimensional_analysis_tests() {
 	Quantity<std::complex<double>, Adimensional> comp1(1, 2);
 	Quantity<std::complex<double>, Adimensional> comp2(1, 2);
 	std::complex<double> comp3(2, 1);
-	std::cout << (comp1 + comp2) << '\n';
+	std::cout << comp3 + (comp1 + comp2) + comp3 << '\n';
 
 	///////////////////////////////////////////////////////////
 

@@ -11,7 +11,9 @@
 
 		//template<typename NumT, typename Dims> class PrimitiveType;
 
-		template<typename NumT, typename Dims> class PrimitiveTypeBase {
+		class PrimitiveTypeCheck {};
+
+		template<typename NumT, typename Dims> class PrimitiveTypeBase : PrimitiveTypeCheck {
 			public:
 				NumT value;
 
@@ -26,7 +28,7 @@
 				template<typename ...Args> CUDA_CALLABLE_MEMBER inline explicit PrimitiveTypeBase(Args... args) : value(NumT(args...)) {}
 		};
 
-		template<typename NumT> class PrimitiveTypeBase<NumT, Adimensional> {
+		template<typename NumT> class PrimitiveTypeBase<NumT, Adimensional> : PrimitiveTypeCheck {
 			public:
 				NumT value;
 
@@ -216,13 +218,13 @@
 	
 		// Operator overloads between the library's adimensional primitive types and C++ primitive types (including 'bool')
 		#define SAME_UNITS_OPERATOR_WITH_C_PRIM(OPERATOR, ERROR_MESSAGE)\
-			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_lhs>::value, void>::type>\
+			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<!std::is_base_of<PrimitiveTypeCheck, NumT_lhs>::value/*std::is_arithmetic<NumT_lhs>::value*/, void>::type>\
 				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
 						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs OPERATOR rhs.value);\
 					}\
 			\
-			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_arithmetic<NumT_rhs>::value, void>::type>\
+			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<!std::is_base_of<PrimitiveTypeCheck, NumT_rhs>::value/*std::is_arithmetic<NumT_rhs>::value*/, void>::type>\
 				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional> lhs, NumT_rhs rhs) {\
 						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs.value OPERATOR rhs);\
