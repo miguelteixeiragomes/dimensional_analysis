@@ -1,6 +1,6 @@
 # Dimensional Analysis Library
 
-This is a header-only library that implements compile time dimensional and [orientational]{https://en.wikipedia.org/wiki/Dimensional_analysis#Siano.27s_extension:_orientational_analysis} analysis in C++ through template meta-programming. The library defines template classes matching C++'s arithmetic built-in types whose template argument is the dimensions. It also provides a generic container for adding dimensions to other types.
+This is a header-only library that implements compile time dimensional and [orientational](https://en.wikipedia.org/wiki/Dimensional_analysis#Siano.27s_extension:_orientational_analysis) analysis in C++ through template meta-programming. The library defines template classes matching C++'s arithmetic built-in types whose template argument is the dimensions. It also provides a generic container for adding dimensions to other types.
 
 ## Getting started
 
