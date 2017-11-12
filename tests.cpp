@@ -5,7 +5,7 @@
 #include <complex>
 //#define SKIP_DIMENSIONAL_ANALYSIS
 #include "dimensional_analysis.h"
-#include "test_cuda.cuh"
+//#include "test_cuda.cuh"
 
 
 class CLASS {
@@ -129,6 +129,6 @@ void orientational_analysis_tests() {
 int main(int argc, char* argv[]) {
 	dimensional_analysis_tests();
 	orientational_analysis_tests();
-	test_cuda();
+	//test_cuda();
 	return 0;
 }
