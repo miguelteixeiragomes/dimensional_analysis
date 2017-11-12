@@ -21,7 +21,7 @@ void time_func(int16<Time> x) {}
 void float_func(float32<> x) {}
 
 
-void dimensions() {
+void dimensional_analysis_tests() {
 	std::int8_t  i8 ;
 	std::int16_t i16;
 	std::int32_t i32;
@@ -111,12 +111,24 @@ void dimensions() {
 	std::complex<double> comp3(2, 1);
 	std::cout << (comp1 + comp2) << '\n';
 
+	///////////////////////////////////////////////////////////
 
-	float32<Volume>(25) + float32<MUL_DIMS<Length, Length, Length>::value>(7);
+	float32<Volume>(25) + float32<MUL_DIMS<DIMS_POW<Length, 2>::value, Length>::value>(7);
 }
 
+
+void orientational_analysis_tests() {
+	float64<LengthX> x(2.0f);
+	float64<LengthY> y(2.0f);
+	float64<LengthZ> z(2.0f);
+
+	float64<Length> l = sqrt(pow<2>(x) + pow<2>(y) + pow<2>(z));
+}
+
+
 int main(int argc, char* argv[]) {
-	dimensions();
+	dimensional_analysis_tests();
+	orientational_analysis_tests();
 	test_cuda();
 	return 0;
 }

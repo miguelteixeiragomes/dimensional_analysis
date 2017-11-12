@@ -117,8 +117,8 @@ namespace INTERNAL_NAMESPACE { template<typename NumT, typename Dims> class Prim
 #include "primitive_types.h"
 ////////////////////////////////////////////////////////
 
-#define DIMENSION_DEFINITION_AND_LITERALS(NAME, LENGTH_EXP, TIME_EXP, MASS_EXP, CHARGE_EXP, TEMPERATURE_EXP)\
-	typedef Dimensions< std::ratio<LENGTH_EXP>, std::ratio<TIME_EXP>, std::ratio<MASS_EXP>, std::ratio<CHARGE_EXP>, std::ratio<TEMPERATURE_EXP> > NAME;\
+#define DIMENSION_DEFINITION_AND_LITERALS(NAME, LENGTH_EXP, TIME_EXP, MASS_EXP, CHARGE_EXP, TEMPERATURE_EXP, ORIENTATION)\
+	/*template<UINT64_T orientation>*/ using NAME = Dimensions< std::ratio<LENGTH_EXP>, std::ratio<TIME_EXP>, std::ratio<MASS_EXP>, std::ratio<CHARGE_EXP>, std::ratio<TEMPERATURE_EXP>, ORIENTATION>;\
 	CUDA_CALLABLE_MEMBER inline INT8    <NAME> operator "" _s8_   ## NAME(unsigned long long x) { return INT8    <NAME>(x); }\
 	CUDA_CALLABLE_MEMBER inline INT16   <NAME> operator "" _s16_  ## NAME(unsigned long long x) { return INT16   <NAME>(x); }\
 	CUDA_CALLABLE_MEMBER inline INT32   <NAME> operator "" _      ## NAME(unsigned long long x) { return INT32   <NAME>(x); }\
@@ -133,25 +133,29 @@ namespace INTERNAL_NAMESPACE { template<typename NumT, typename Dims> class Prim
 	CUDA_CALLABLE_MEMBER inline FLOAT64 <NAME> operator "" _f64_  ## NAME(long double        x) { return FLOAT64 <NAME>(x); }\
 	CUDA_CALLABLE_MEMBER inline FLOAT128<NAME> operator "" _f128_ ## NAME(long double        x) { return FLOAT128<NAME>(x); }
 
-DIMENSION_DEFINITION_AND_LITERALS(SpatialFrequency         , -1,  0,  0,  0,  0)
-DIMENSION_DEFINITION_AND_LITERALS(Length                   ,  1,  0,  0,  0,  0) // fundamental
-DIMENSION_DEFINITION_AND_LITERALS(Area                     ,  2,  0,  0,  0,  0)
-DIMENSION_DEFINITION_AND_LITERALS(Volume                   ,  3,  0,  0,  0,  0)
-DIMENSION_DEFINITION_AND_LITERALS(Frequency                ,  0, -1,  0,  0,  0)
-DIMENSION_DEFINITION_AND_LITERALS(Time                     ,  0,  1,  0,  0,  0) // fundamental
-DIMENSION_DEFINITION_AND_LITERALS(Mass                     ,  0,  0,  1,  0,  0) // fundamental
-DIMENSION_DEFINITION_AND_LITERALS(Charge                   ,  0,  0,  0,  1,  0) // fundamental
-DIMENSION_DEFINITION_AND_LITERALS(Temperature              ,  0,  0,  0,  1,  0) // fundamental
-DIMENSION_DEFINITION_AND_LITERALS(Current                  ,  0, -1,  0,  1,  0)
-DIMENSION_DEFINITION_AND_LITERALS(Velocity                 ,  1, -1,  0,  0,  0)
-DIMENSION_DEFINITION_AND_LITERALS(Acceleration             ,  1, -2,  0,  0,  0)
-DIMENSION_DEFINITION_AND_LITERALS(Force                    ,  1, -2,  1,  0,  0)
-DIMENSION_DEFINITION_AND_LITERALS(ElectricField            ,  1, -2,  1, -1,  0)
-DIMENSION_DEFINITION_AND_LITERALS(ElectricDisplacementField, -2,  0,  0,  1,  0)
-DIMENSION_DEFINITION_AND_LITERALS(Capacitance              , -2,  2, -1,  2,  0)
-DIMENSION_DEFINITION_AND_LITERALS(Permittivity             , -3,  2, -1,  2,  0)
-DIMENSION_DEFINITION_AND_LITERALS(Inductance               ,  2,  0,  1,  2,  0)
-DIMENSION_DEFINITION_AND_LITERALS(Permeability             ,  1,  0,  1, -2,  0)
+//                                           name            , length , time , mass , charge , temp , orientation
+DIMENSION_DEFINITION_AND_LITERALS( SpatialFrequency          ,   -1   ,   0  ,   0  ,    0   ,   0  ,      0     )
+DIMENSION_DEFINITION_AND_LITERALS( Length                    ,    1   ,   0  ,   0  ,    0   ,   0  ,      0     ) // fundamental
+DIMENSION_DEFINITION_AND_LITERALS( LengthX                   ,    1   ,   0  ,   0  ,    0   ,   0  ,      1     )
+DIMENSION_DEFINITION_AND_LITERALS( LengthY                   ,    1   ,   0  ,   0  ,    0   ,   0  ,      2     )
+DIMENSION_DEFINITION_AND_LITERALS( LengthZ                   ,    1   ,   0  ,   0  ,    0   ,   0  ,      3     )
+DIMENSION_DEFINITION_AND_LITERALS( Area                      ,    2   ,   0  ,   0  ,    0   ,   0  ,      0     )
+DIMENSION_DEFINITION_AND_LITERALS( Volume                    ,    3   ,   0  ,   0  ,    0   ,   0  ,      0     )
+DIMENSION_DEFINITION_AND_LITERALS( Frequency                 ,    0   ,  -1  ,   0  ,    0   ,   0  ,      0     )
+DIMENSION_DEFINITION_AND_LITERALS( Time                      ,    0   ,   1  ,   0  ,    0   ,   0  ,      0     ) // fundamental
+DIMENSION_DEFINITION_AND_LITERALS( Mass                      ,    0   ,   0  ,   1  ,    0   ,   0  ,      0     ) // fundamental
+DIMENSION_DEFINITION_AND_LITERALS( Charge                    ,    0   ,   0  ,   0  ,    1   ,   0  ,      0     ) // fundamental
+DIMENSION_DEFINITION_AND_LITERALS( Temperature               ,    0   ,   0  ,   0  ,    0   ,   1  ,      0     ) // fundamental
+DIMENSION_DEFINITION_AND_LITERALS( Current                   ,    0   ,  -1  ,   0  ,    1   ,   0  ,      0     )
+DIMENSION_DEFINITION_AND_LITERALS( Velocity                  ,    1   ,  -1  ,   0  ,    0   ,   0  ,      0     )
+DIMENSION_DEFINITION_AND_LITERALS( Acceleration              ,    1   ,  -2  ,   0  ,    0   ,   0  ,      0     )
+DIMENSION_DEFINITION_AND_LITERALS( Force                     ,    1   ,  -2  ,   1  ,    0   ,   0  ,      0     )
+DIMENSION_DEFINITION_AND_LITERALS( ElectricField             ,    1   ,  -2  ,   1  ,   -1   ,   0  ,      0     )
+DIMENSION_DEFINITION_AND_LITERALS( ElectricDisplacementField ,   -2   ,   0  ,   0  ,    1   ,   0  ,      0     )
+DIMENSION_DEFINITION_AND_LITERALS( Capacitance               ,   -2   ,   2  ,  -1  ,    2   ,   0  ,      0     )
+DIMENSION_DEFINITION_AND_LITERALS( Permittivity              ,   -3   ,   2  ,  -1  ,    2   ,   0  ,      0     )
+DIMENSION_DEFINITION_AND_LITERALS( Inductance                ,    2   ,   0  ,   1  ,    2   ,   0  ,      0     )
+DIMENSION_DEFINITION_AND_LITERALS( Permeability              ,    1   ,   0  ,   1  ,   -2   ,   0  ,      0     )
 
 
 
