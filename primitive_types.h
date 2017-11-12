@@ -5,7 +5,7 @@
 
 	namespace INTERNAL_NAMESPACE {
 
-		template<typename NumT> struct NumericValue {
+		template<typename NumT> struct TypeValue {
 			static const NumT value;
 		};
 
@@ -61,8 +61,8 @@
 		};
 
 		#define UNARY_PLUS_MINUS(OPERATOR)\
-			template<typename T, typename D> CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype( OPERATOR NumericValue<T>::value), D> operator OPERATOR (PrimitiveType<T, D> x) {\
-				return PrimitiveType<decltype( OPERATOR NumericValue<T>::value), D>( OPERATOR x.value);\
+			template<typename T, typename D> CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype( OPERATOR TypeValue<T>::value), D> operator OPERATOR (PrimitiveType<T, D> x) {\
+				return PrimitiveType<decltype( OPERATOR TypeValue<T>::value), D>( OPERATOR x.value);\
 			}
 
 		UNARY_PLUS_MINUS(+)
@@ -78,9 +78,9 @@
 		// Operator overloads between the library's primitive types
 		#define SAME_UNITS_OPERATOR(OPERATOR, ERROR_MESSAGE)\
 			template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
-				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Dims>\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), Dims>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, PrimitiveType<NumT_rhs, Dims> rhs) {\
-						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Dims>(lhs.value OPERATOR rhs.value);\
+						return PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), Dims>(lhs.value OPERATOR rhs.value);\
 					}/*\
 			\
 			template<typename NumT_lhs, typename DimsLhs, typename NumT_rhs, typename DimsRhs> CUDA_CALLABLE_MEMBER struct ERROR_MESSAGE;\
@@ -125,16 +125,16 @@
 
 		#define MUL_OR_DIV(OPERATOR, CT_FUNC)\
 			template<typename NumT_lhs, typename NumT_rhs, typename DimsLhs, typename DimsRhs>\
-				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC<DimsLhs, DimsRhs>::result>\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), typename CT_FUNC<DimsLhs, DimsRhs>::result>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, DimsLhs> lhs, PrimitiveType<NumT_rhs, DimsRhs> rhs) {\
-						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC<DimsLhs, DimsRhs>::result>(lhs.value OPERATOR rhs.value);\
+						return PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), typename CT_FUNC<DimsLhs, DimsRhs>::result>(lhs.value OPERATOR rhs.value);\
 					}
 
 		#define BITWISE_BINARY_OPERATOR(OPERATOR, ERROR_MESSAGE)\
 			template<typename NumT_lhs, typename NumT_rhs/*, typename Constraint = typename std::enable_if<std::is_integral<NumT_lhs>::value & std::is_integral<NumT_rhs>::value, void>::type*/>\
-				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional> lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
-						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs.value OPERATOR rhs.value);\
+						return PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), Adimensional>(lhs.value OPERATOR rhs.value);\
 					}/*\
 			\
 			template<typename NumT_lhs, typename DimsLhs, typename NumT_rhs, typename DimsRhs> struct ERROR_MESSAGE;\
@@ -190,15 +190,15 @@
 		// Operator overloads between the library's adimensional primitive types and C++ primitive types (including 'bool')
 		#define SAME_UNITS_OPERATOR_WITH_C_PRIM(OPERATOR, ERROR_MESSAGE)\
 			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<!std::is_base_of<PrimitiveTypeCheck, NumT_lhs>::value/*std::is_arithmetic<NumT_lhs>::value*/, void>::type>\
-				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
-						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs OPERATOR rhs.value);\
+						return PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), Adimensional>(lhs OPERATOR rhs.value);\
 					}\
 			\
 			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<!std::is_base_of<PrimitiveTypeCheck, NumT_rhs>::value/*std::is_arithmetic<NumT_rhs>::value*/, void>::type>\
-				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional> lhs, NumT_rhs rhs) {\
-						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs.value OPERATOR rhs);\
+						return PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), Adimensional>(lhs.value OPERATOR rhs);\
 					}/*\
 			\
 			template<typename NumT_lhs, typename NumT_rhs, typename Dims> struct ERROR_MESSAGE;\
@@ -211,14 +211,14 @@
 
 		#define MUL_OR_DIV_C_PRIM(OPERATOR, CT_FUNC)\
 			template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
-				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC<Adimensional, Dims>::result>\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), typename CT_FUNC<Adimensional, Dims>::result>\
 					operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Dims> rhs) {\
-						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC<Adimensional, Dims>::result>(lhs OPERATOR rhs.value);\
+						return PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), typename CT_FUNC<Adimensional, Dims>::result>(lhs OPERATOR rhs.value);\
 					}\
 			template<typename NumT_lhs, typename NumT_rhs, typename Dims>\
-				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC<Dims, Adimensional>::result>\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), typename CT_FUNC<Dims, Adimensional>::result>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Dims> lhs, NumT_rhs rhs) {\
-						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), typename CT_FUNC<Dims, Adimensional>::result>(lhs.value OPERATOR rhs);\
+						return PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), typename CT_FUNC<Dims, Adimensional>::result>(lhs.value OPERATOR rhs);\
 					}
 
 		#define COMPARATOR_C_PRIM(OPERATOR, ERROR_MESSAGE)\
@@ -242,15 +242,15 @@
 
 		#define BITWISE_BINARY_OPERATOR_C_PRIM(OPERATOR, ERROR_MESSAGE)\
 			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_integral<NumT_lhs>::value & std::is_integral<NumT_rhs>::value, void>::type>\
-				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (NumT_lhs lhs, PrimitiveType<NumT_rhs, Adimensional> rhs) {\
-						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs OPERATOR rhs.value);\
+						return PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), Adimensional>(lhs OPERATOR rhs.value);\
 					}\
 			\
 			template<typename NumT_lhs, typename NumT_rhs, typename Constraint = typename std::enable_if<std::is_integral<NumT_lhs>::value & std::is_integral<NumT_rhs>::value, void>::type>\
-				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>\
+				CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), Adimensional>\
 					operator OPERATOR (PrimitiveType<NumT_lhs, Adimensional> lhs, NumT_rhs rhs) {\
-						return PrimitiveType<decltype(NumericValue<NumT_lhs>::value OPERATOR NumericValue<NumT_rhs>::value), Adimensional>(lhs.value OPERATOR rhs);\
+						return PrimitiveType<decltype(TypeValue<NumT_lhs>::value OPERATOR TypeValue<NumT_rhs>::value), Adimensional>(lhs.value OPERATOR rhs);\
 					}/*\
 			\
 			template<typename NumT_lhs, typename NumT_rhs, typename Dims> struct ERROR_MESSAGE;\
@@ -294,9 +294,9 @@
 	
 
 		template<typename NumT_lhs, typename NumT_rhs, typename DimsLhs, typename DimsRhs>
-			CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(NumericValue<NumT_lhs>::value % NumericValue<NumT_rhs>::value), DimsLhs>
+			CUDA_CALLABLE_MEMBER inline PrimitiveType<decltype(TypeValue<NumT_lhs>::value % TypeValue<NumT_rhs>::value), DimsLhs>
 				operator%(PrimitiveType<NumT_lhs, DimsLhs> lhs, PrimitiveType<NumT_rhs, DimsRhs> rhs) {
-					return PrimitiveType<decltype(NumericValue<NumT_lhs>::value % NumericValue<NumT_rhs>::value), DimsLhs>(lhs.value % rhs.value);
+					return PrimitiveType<decltype(TypeValue<NumT_lhs>::value % TypeValue<NumT_rhs>::value), DimsLhs>(lhs.value % rhs.value);
 		}
 
 	}
@@ -311,20 +311,20 @@
 					INTERNAL_NAMESPACE::PrimitiveType<NUM_RET_TYPE, RET_DIMS>(
 						std::pow(x.value, NUM_RET_TYPE(exp_num) / NUM_RET_TYPE(exp_den)));
 			}
-	/*template<INT64_T exp_num, INT64_T exp_den = 1, typename NumT, typename Dims>
+	template<INT64_T exp_num, INT64_T exp_den = 1, typename Dims>
 		CUDA_CALLABLE_MEMBER inline INTERNAL_NAMESPACE::PrimitiveType<float, RET_DIMS>
 			powf(INTERNAL_NAMESPACE::PrimitiveType<float, Dims> x) {
 				return 
 					INTERNAL_NAMESPACE::PrimitiveType<float, RET_DIMS>(
 						powf(x.value, float(exp_num) / float(exp_den)));
 			}
-	template<INT64_T exp_num, INT64_T exp_den = 1, typename NumT, typename Dims>
+	template<INT64_T exp_num, INT64_T exp_den = 1, typename Dims>
 		CUDA_CALLABLE_MEMBER inline INTERNAL_NAMESPACE::PrimitiveType<double, RET_DIMS>
 			pow(INTERNAL_NAMESPACE::PrimitiveType<double, Dims> x) {
 				return 
 					INTERNAL_NAMESPACE::PrimitiveType<double, RET_DIMS>(
 						pow(x.value, double(exp_num) / double(exp_den)));
-			}*/
+			}
 	#undef NUM_RET_TYPE
 	#undef RET_DIMS
 

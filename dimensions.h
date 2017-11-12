@@ -6,14 +6,14 @@ template<typename length,
          typename mass, 
          typename charge,
          typename temperature,
-         UINT64_T orientation = 0> 
+         INT64_T  orientation = 0> 
 	struct Dimensions {
-		using                 LENGTH          = length;
-		using                 TIME            = time;
-		using                 MASS            = mass;
-		using                 CHARGE          = charge;
-		using                 TEMPERATURE     = temperature;
-		static const UINT64_T ORIENTATION     = orientation;
+		using                LENGTH      = length;
+		using                TIME        = time;
+		using                MASS        = mass;
+		using                CHARGE      = charge;
+		using                TEMPERATURE = temperature;
+		static const INT64_T ORIENTATION = orientation;
 	};
 
 using Adimensional = Dimensions< std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0>, std::ratio<0> >;

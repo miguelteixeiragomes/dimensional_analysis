@@ -5,7 +5,7 @@
 #include <complex>
 //#define SKIP_DIMENSIONAL_ANALYSIS
 #include "dimensional_analysis.h"
-//#include "test_cuda.cuh"
+#include "test_cuda.cuh"
 
 
 class CLASS {
@@ -44,6 +44,7 @@ void dimensional_analysis_tests() {
 	float64<> f(2.7);
 	float64<Length>(8.0) + 7.0_f64_Length;
 	e = f;
+
 	std::cout << "Operations with library types\n";
 		std::cout << "\t" << "a:   " << a << "\n";
 		std::cout << "\t" << "u+:  " << +a << "\n";
@@ -129,6 +130,6 @@ void orientational_analysis_tests() {
 int main(int argc, char* argv[]) {
 	dimensional_analysis_tests();
 	orientational_analysis_tests();
-	//test_cuda();
+	test_cuda();
 	return 0;
 }

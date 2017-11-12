@@ -1,6 +1,6 @@
 # Dimensional Analysis Library
 
-This is a header-only library that implements compile time dimensional analysis in C++ through template meta-programming. The library defines template classes matching C++'s arithmetic built-in types whose template argument is the dimensions.
+This is a header-only library that implements compile time dimensional and [orientational]{https://en.wikipedia.org/wiki/Dimensional_analysis#Siano.27s_extension:_orientational_analysis} analysis in C++ through template meta-programming. The library defines template classes matching C++'s arithmetic built-in types whose template argument is the dimensions. It also provides a generic container for adding dimensions to other types.
 
 ## Getting started
 
@@ -9,7 +9,7 @@ This is a header-only library that implements compile time dimensional analysis 
 The library is composed only of header files. To use it, simply include the file 'dimensional_analysis.h'. The compilers tested were
 
 * MS Visual C++ 19.00.24215.1;
-* GCC - 6.3.0/7.2.0;
+* GCC - 7.2.0;
 * NVCC - 8.0.60.
 
 However, the library should work with any C++11 compliant compiler.
@@ -49,6 +49,8 @@ This library supports a number of compilation options through macro definitions:
 
 ## Usage
 
+### Simple examples
+
 The primitive types in the library are template classes that can be used to replace C++'s arithmetic built-in types. The template argument serves as the dimension.
 
 ```
@@ -66,3 +68,76 @@ float64<Acceleration> ac = (float64<Velocity>(3e8) - float64<Length>(3.14) / flo
 ```
 
 The C++ arithmetic built-in types can be operated with the library's types and are interpreted as `Adimensional`. The operators `+`, `-`, `*`, `/`, and `%` are implemented between types with any dimensions. The bitwise operators `~`, `|`, `^`, `&`, `<<`, and `>>` are only defined for adimensional quantities.
+
+### Literals
+
+The library defines literals for declaring dimensioned quantities. The names coincide with the names given to the dimensions (listed below). Before the name of the dimension a suffix can be added to define the arithmetic type:
+
+* `_s8_ ## <dim-name>` - declares a `INT8_T`;
+* `_s16_ ## <dim-name>` - declares a `INT16_T`;
+* `_s32_ ## <dim-name>` or just `_ ## <dim-name>` - declares a `INT32_T`;
+* `_s64_ ## <dim-name>` - declares a `INT64_T`;
+* `_u8_ ## <dim-name>` - declares a `UINT8_T`;
+* `_u16_ ## <dim-name>` - declares a `UINT16_T`;
+* `_u32_ ## <dim-name>` - declares a `UINT32_T`;
+* `_u64_ ## <dim-name>` - declares a `UINT64_T`;
+* `_f32_ ## <dim-name>` - declares a `FLOAT32_T`;
+* `_f64_ ## <dim-name>` or just `_ ## <dim-name>` - declares a `FLOAT32_T`;
+* `_f128_ ## <dim-name>` - declares a `FLOAT128_T`.
+
+The missing `<dim-name>` can be from the following list of dimensions:
+
+* `Acceleration`;         
+* `Area`;              
+* `Capacitance`;
+* `Charge`;
+* `Curren`;
+* `ElectricDisplacementField`;
+* `ElectricField`;
+* `Energy`;
+* `Force`;
+* `Frequency`;
+* `Inductance`;
+* `Length`;
+* `LengthX`;
+* `LengthY`;
+* `LengthZ`;
+* `Mass`;
+* `Permeability`;
+* `Permittivity`;
+* `SpatialFrequency`;
+* `Temperature`;
+* `Time`;
+* `Velocity`;
+* `Volume`.
+
+For example:
+
+```
+float64<Length>(8.0) + 7.0_f64_Length; // compiles
+float64<Time>(8.0) + 7.0_Length; // doesn't compiles (the literal is the same as the line above)
+```
+
+### Functions
+
+Most mathematical functions can only take adimensional arguments, however functions like `sqrt`, `cbrt`, and `pow` can take dimensioned quantities and alter their dimensions. The library defines `sqrt`, `sqrtf`, `cbrt`, and `cbrtf` which can be used directly, and map to the corresponding functions in the `std` library or in CUDA.
+For the function `pow` (or `powf`) the exponent (2nd argument) must be known at compile-time and so the library defines both functions with template arguments for numerator and denominator:
+
+```
+std::cout << pow<7>(pow<1, 7>(a)) << '\n'; // the first 'pow' is has exponent 7 while the second has exponent 1/7
+std::cout << float64<Length>(5) + sqrt(float64<Area>(25)) << '\n';
+std::cout << float64<Length>(5) + cbrt(float64<Volume>(125)) << '\n';
+float64<Velocity> lightspeed = 1.0 / sqrt(float64<Permittivity>(8.85418781762039e-12)*float64<Permeability>(1.256637061435917e-6));
+```
+
+### Declaring new dimensions
+
+To declare new dimensions the base dimensions - 'Length', 'Time', 'Mass', 'Charge', 'Temperature' - can be used in conjunction with the `struct` `MUl_DIMS` and `DIMS_POW`:
+
+```
+using Force = MUL_DIMS<Mass, Length, DIMS_POW<Time, -2>::value>::value; // note: 'Force' is already defined in the library
+```
+
+### Orientational analysis
+
+The implementation of Siano's orientational analysis is still in an experimental phase since several adaptations add to me made to accommodate the fractional powers. The types can already be defined from the base units. Since `Length` is the only base unit to have orientation the extra units `LengthX`, `LengthY`, and `LengthZ` are defined to allow the construction of any dimension and orientation.
