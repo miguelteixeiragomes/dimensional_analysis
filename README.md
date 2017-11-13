@@ -87,29 +87,18 @@ The library defines literals for declaring dimensioned quantities. The names coi
 
 The missing `<dim-name>` can be from the following list of dimensions:
 
-* `Acceleration`;         
-* `Area`;              
-* `Capacitance`;
-* `Charge`;
-* `Current`;
-* `ElectricDisplacementField`;
-* `ElectricField`;
-* `Energy`;
-* `Force`;
-* `Frequency`;
-* `Inductance`;
-* `Length`;
-* `LengthX`;
-* `LengthY`;
-* `LengthZ`;
-* `Mass`;
-* `Permeability`;
-* `Permittivity`;
-* `SpatialFrequency`;
-* `Temperature`;
-* `Time`;
-* `Velocity`;
-* `Volume`.
+| `Acceleration`              | `LengthX`          |
+| `Area`                      | `LengthY`          |
+| `Capacitance`               | `LengthZ`          |
+| `Charge`                    | `Mass`             |
+| `Current`                   | `Permeability`     |
+| `ElectricDisplacementField` | `Permittivity`     |
+| `ElectricField`             | `SpatialFrequency` |
+| `Energy`                    | `Temperature`      |
+| `Force`                     | `Time`             |
+| `Frequency`                 | `Velocity`         |
+| `Inductance`                | `Volume`           |
+| `Length`                    |                    |
 
 For example:
 
