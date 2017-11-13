@@ -87,6 +87,8 @@ The library defines literals for declaring dimensioned quantities. The names coi
 
 The missing `<dim-name>` can be from the following list of dimensions:
 
+| Dimensions                  | More dimensions    |
+| --------------------------- | ------------------ |
 | `Acceleration`              | `LengthX`          |
 | `Area`                      | `LengthY`          |
 | `Capacitance`               | `LengthZ`          |
