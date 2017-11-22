@@ -56,7 +56,7 @@ The primitive types in the library are template classes that can be used to repl
 ```
 int32<Adimensional> b(42); // 'a' is adimensional
 uint64<> b(42); // 'b' is also adimensional
-float32<Time> c(3.14); // 'c' as time dimensions
+float32<Time> c(3.14); // 'c' has time dimensions
 ```
 
 All the operations available for the built-in types are also available for the library's types. Compilation will fail with an undefined `struct`, that acts as an error message, whenever the operations do not have the correct units
@@ -87,20 +87,17 @@ The library defines literals for declaring dimensioned quantities. The names coi
 
 The missing `<dim-name>` can be from the following list of dimensions:
 
-| Dimensions                  | More dimensions    |
-| --------------------------- | ------------------ |
-| `Acceleration`              | `LengthX`          |
-| `Area`                      | `LengthY`          |
-| `Capacitance`               | `LengthZ`          |
-| `Charge`                    | `Mass`             |
-| `Current`                   | `Permeability`     |
-| `ElectricDisplacementField` | `Permittivity`     |
-| `ElectricField`             | `SpatialFrequency` |
-| `Energy`                    | `Temperature`      |
-| `Force`                     | `Time`             |
-| `Frequency`                 | `Velocity`         |
-| `Inductance`                | `Volume`           |
-| `Length`                    |                    |
+| Dimensions                  | More dimensions | Even more dimensions |
+| --------------------------- | --------------- | -------------------- |
+| `Acceleration`              | `Energy`        | `Mass`               |
+| `Action`                    | `Force`         | `Permeability`       |
+| `Area`                      | `Frequency`     | `Permittivity`       |
+| `Capacitance`               | `Inductance`    | `SpatialFrequency`   |
+| `Charge`                    | `Length`        | `Temperature`        |
+| `Current`                   | `LengthX`       | `Time`               |
+| `ElectricDisplacementField` | `LengthY`       | `Velocity`           |
+| `ElectricField`             | `LengthZ`       | `Volume`             |
+
 
 For example:
 

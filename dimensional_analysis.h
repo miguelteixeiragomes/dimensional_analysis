@@ -135,6 +135,7 @@ namespace INTERNAL_NAMESPACE { template<typename NumT, typename Dims> class Prim
 
 //                                           name            , length , time , mass , charge , temp , orientation
 DIMENSION_DEFINITION_AND_LITERALS( Acceleration              ,    1   ,  -2  ,   0  ,    0   ,   0  ,      0     )
+DIMENSION_DEFINITION_AND_LITERALS( Action                    ,    2   ,  -1  ,   1  ,    0   ,   0  ,      0     )
 DIMENSION_DEFINITION_AND_LITERALS( Area                      ,    2   ,   0  ,   0  ,    0   ,   0  ,      0     )
 DIMENSION_DEFINITION_AND_LITERALS( Capacitance               ,   -2   ,   2  ,  -1  ,    2   ,   0  ,      0     )
 DIMENSION_DEFINITION_AND_LITERALS( Charge                    ,    0   ,   0  ,   0  ,    1   ,   0  ,      0     ) // fundamental
