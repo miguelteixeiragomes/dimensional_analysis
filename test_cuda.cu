@@ -69,6 +69,13 @@ __global__ void cuda_dims() {
 	float64<Length>(5) + cbrt(float64<Volume>(125));
 	
 	float64<Velocity> lightspeed = 1.0 / sqrt(float64<Permittivity>(8.85418781762039e-12) * float64<Permeability>(1.256637061435917e-6));
+
+
+	thrust::complex<float> comp1(1.0, 2.0);
+	Quantity<thrust::complex<float>, Time> comp2(1.0, 2.0);
+	Quantity<thrust::complex<float>, Frequency> comp3(1.0, 2.0);
+	thrust::complex<float> comp4(1.0, 2.0);
+	comp1 + comp2*comp3 + comp4;
 }
 
 void test_cuda() {
