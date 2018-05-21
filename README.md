@@ -82,7 +82,7 @@ The library defines literals for declaring dimensioned quantities. The names coi
 * `_u32_ ## <dim-name>` - declares a `UINT32_T`;
 * `_u64_ ## <dim-name>` - declares a `UINT64_T`;
 * `_f32_ ## <dim-name>` - declares a `FLOAT32_T`;
-* `_f64_ ## <dim-name>` or just `_ ## <dim-name>` - declares a `FLOAT32_T`;
+* `_f64_ ## <dim-name>` or just `_ ## <dim-name>` - declares a `FLOAT64_T`;
 * `_f128_ ## <dim-name>` - declares a `FLOAT128_T`.
 
 The missing `<dim-name>` can be from the following list of dimensions:
@@ -132,7 +132,7 @@ float64<Velocity> lightspeed = 1.0 / sqrt(float64<Permittivity>(8.85418781762039
 
 ### Declaring new dimensions
 
-To declare new dimensions the base dimensions - 'Length', 'Time', 'Mass', 'Charge', 'Temperature' - can be used in conjunction with the `struct` `MUl_DIMS` and `DIMS_POW`:
+To declare new dimensions the base dimensions - 'Length', 'Time', 'Mass', 'Charge', 'Temperature' - can be used in conjunction with the `struct`s `MUl_DIMS` and `DIMS_POW`:
 
 ```
 using Force = MUL_DIMS<Mass, Length, DIMS_POW<Time, -2>::value>::value; // note: 'Force' is already defined in the library
