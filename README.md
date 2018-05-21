@@ -132,7 +132,7 @@ float64<Velocity> lightspeed = 1.0 / sqrt(float64<Permittivity>(8.85418781762039
 
 ### Declaring new dimensions
 
-To declare new dimensions the base dimensions - 'Length', 'Time', 'Mass', 'Charge', 'Temperature' - can be used in conjunction with the `struct`s `MUl_DIMS` and `DIMS_POW`:
+To declare new dimensions the base dimensions - `Length`, `Time`, `Mass`, `Charge`, `Temperature` - can be used in conjunction with the `struct`s `MUl_DIMS` and `DIMS_POW`:
 
 ```
 using Force = MUL_DIMS<Mass, Length, DIMS_POW<Time, -2>::value>::value; // note: 'Force' is already defined in the library
